@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Borges ERP - Painel Central</title>
 
-  <!-- O ÍCONE DA ABA DO NAVEGADOR AGORA É FIXO E LOCAL -->
   <link rel="icon" type="image/png" href="./logomarca3d.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,10 +31,8 @@
 
 <body class="bg-gesso font-body text-concreto antialiased flex h-screen overflow-hidden">
 
-  <!-- OVERLAY MENU MOBILE -->
   <div id="mobileOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-concreto/50 z-40 hidden md:hidden transition-opacity"></div>
 
-  <!-- SIDEBAR (Responsiva) -->
   <aside id="sidebar" class="w-64 bg-concreto text-white flex flex-col shadow-xl z-50 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out">
     <div class="h-20 flex items-center justify-between px-6 border-b border-white/10 bg-concreto hover:bg-concreto/90 cursor-pointer">
       <div class="flex items-center gap-3">
@@ -73,7 +70,6 @@
     </div>
   </aside>
 
-  <!-- CONTEÚDO PRINCIPAL -->
   <main class="flex-1 flex flex-col h-screen overflow-y-auto w-full relative">
     
     <header class="h-20 bg-white border-b border-concreto/10 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30">
@@ -175,7 +171,6 @@
         </div>
       </div>
 
-      <!-- Calculadora Rápida -->
       <div class="bg-white p-6 rounded-2xl border border-concreto/10 shadow-sm flex flex-col max-w-full lg:max-w-2xl">
         <div class="flex items-center gap-3 mb-6">
           <div class="w-10 h-10 rounded-xl bg-cta/20 flex items-center justify-center text-cta">
@@ -250,7 +245,6 @@
                 </tr>
               </thead>
               <tbody id="tabelaOrcamentos" class="divide-y divide-concreto/5">
-                <!-- Preenchido via JS -->
               </tbody>
             </table>
           </div>
@@ -298,29 +292,24 @@
         calcularImpostos(); 
     });
 
-    // SISTEMA DA LOGO REVISADO (Sem mexer no Favicon)
     async function aplicarLogoGlobal() {
         try {
             const token = localStorage.getItem('borges_token');
-            const resposta = await fetch('http://localhost:8080/api/configuracoes', {
+            const resposta = await fetch('https://borges-erp.onrender.com/api/configuracoes', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
             if (resposta.ok) {
                 const config = await resposta.json();
                 if (config.logoBase64) {
-                    // Atualiza Sidebar
                     const logoSidebar = document.getElementById('sidebarLogo');
                     if (logoSidebar) logoSidebar.src = config.logoBase64;
-                    
-                    // Atualiza Avatar do Admin
                     const adminCircle = document.getElementById('adminAvatar');
                     if (adminCircle) {
                         adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
                         adminCircle.classList.remove('bg-vermelho/10'); 
                         adminCircle.classList.add('bg-white', 'shadow-sm', 'border', 'border-concreto/10');
                     }
-                    // NOTA: Favicon foi removido daqui para evitar o bloqueio do Google Chrome.
                 }
             }
         } catch (erro) {
@@ -432,7 +421,7 @@
             const token = localStorage.getItem('borges_token');
             const diasSelecionados = document.getElementById('filtroDataDashboard') ? document.getElementById('filtroDataDashboard').value : '30';
             
-            const resposta = await fetch(`http://localhost:8080/api/orcamentos/dashboard?dias=${diasSelecionados}`, {
+            const resposta = await fetch(`https://borges-erp.onrender.com/api/orcamentos/dashboard?dias=${diasSelecionados}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -493,7 +482,7 @@
     async function carregarOrcamentos() {
         try {
             const token = localStorage.getItem('borges_token');
-            const resposta = await fetch(`http://localhost:8080/api/orcamentos?page=${paginaAtual}&size=10`, {
+            const resposta = await fetch(`https://borges-erp.onrender.com/api/orcamentos?page=${paginaAtual}&size=10`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!verificarAutenticacao(resposta.status)) return;
@@ -518,7 +507,7 @@
     async function atualizarStatus(id, novoStatus) {
         try {
             const token = localStorage.getItem('borges_token');
-            await fetch(`http://localhost:8080/api/orcamentos/${id}/status`, {
+            await fetch(`https://borges-erp.onrender.com/api/orcamentos/${id}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ status: novoStatus })
@@ -527,17 +516,14 @@
         } catch (erro) {}
     }
 
-    // =========================================================================
-    // GERADOR DE PDF DE ORÇAMENTO E CONTRATOS
-    // =========================================================================
     async function gerarPDF(id) {
         try {
             const token = localStorage.getItem('borges_token');
             const headers = { 'Authorization': `Bearer ${token}` };
             
             const [resOrc, resConfig] = await Promise.all([
-                fetch(`http://localhost:8080/api/orcamentos/${id}`, { headers }),
-                fetch('http://localhost:8080/api/configuracoes', { headers }).catch(() => null)
+                fetch(`https://borges-erp.onrender.com/api/orcamentos/${id}`, { headers }),
+                fetch('https://borges-erp.onrender.com/api/configuracoes', { headers }).catch(() => null)
             ]);
             
             if (!verificarAutenticacao(resOrc.status)) return;
@@ -671,8 +657,8 @@
             const headers = { 'Authorization': `Bearer ${token}` };
 
             const [resOrc, resConfig] = await Promise.all([
-                fetch(`http://localhost:8080/api/orcamentos/${id}`, { headers }),
-                fetch('http://localhost:8080/api/configuracoes', { headers })
+                fetch(`https://borges-erp.onrender.com/api/orcamentos/${id}`, { headers }),
+                fetch('https://borges-erp.onrender.com/api/configuracoes', { headers })
             ]);
 
             if (!verificarAutenticacao(resOrc.status)) return;

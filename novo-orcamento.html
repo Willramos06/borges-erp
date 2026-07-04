@@ -66,22 +66,18 @@
         await carregarDependencias(); configurarEventos(); aplicarLogoGlobal();
     });
 
-    // SISTEMA GLOBAL DE LOGOMARCA (FAVICON, SIDEBAR E AVATAR)
     async function aplicarLogoGlobal() {
         try {
             const token = localStorage.getItem('borges_token');
-            const resposta = await fetch('http://localhost:8080/api/configuracoes', {
+            const resposta = await fetch('https://borges-erp.onrender.com/api/configuracoes', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
             if (resposta.ok) {
                 const config = await resposta.json();
                 if (config.logoBase64) {
-                    // Atualiza Sidebar (se existir na página)
                     const logoSidebar = document.getElementById('sidebarLogo');
                     if (logoSidebar) logoSidebar.src = config.logoBase64;
-                    
-                    // Atualiza Avatar do Admin (se existir na página)
                     const adminCircle = document.getElementById('adminAvatar');
                     if (adminCircle) {
                         adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
@@ -105,7 +101,7 @@
     async function carregarDependencias() {
         try {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` };
-            const [rC, rM, rS] = await Promise.all([fetch('http://localhost:8080/api/clientes', { headers }), fetch('http://localhost:8080/api/materiais', { headers }), fetch('http://localhost:8080/api/servicos', { headers })]);
+            const [rC, rM, rS] = await Promise.all([fetch('https://borges-erp.onrender.com/api/clientes', { headers }), fetch('https://borges-erp.onrender.com/api/materiais', { headers }), fetch('https://borges-erp.onrender.com/api/servicos', { headers })]);
             if (rC.status === 401 || rC.status === 403) return window.location.href = 'login.html';
             dependencias.clientes = await rC.json(); dependencias.clientes.sort((a, b) => a.nomeRazaoSocial.localeCompare(b.nomeRazaoSocial));
             dependencias.materiais = await rM.json(); dependencias.servicos = await rS.json();
@@ -146,7 +142,7 @@
         const btn = document.querySelector('form button[type="submit"]'); btn.disabled = true; btn.innerHTML = "Salvando...";
         let sub = 0; itensOrcamento.forEach(i => sub += (i.quantidade * i.valorUnitario)); const bdi = desformatarParaCalculo(document.getElementById('bdiPercentual').value), tot = sub + (sub * (bdi / 100));
         const payload = { cliente: { id: parseInt(document.getElementById('clienteId').value) }, descricaoResumida: document.getElementById('descricaoResumida').value, bdiPercentual: bdi, valorSubtotal: sub, valorTotal: tot, status: "Pendente", itens: itensOrcamento.map(i => ({ tipoItem: i.tipoItem, materialId: i.materialId, servicoId: i.servicoId, unidadeMedida: i.unidadeMedida, quantidade: i.quantidade, valorUnitario: i.valorUnitario, valorTotalItem: (i.quantidade * i.valorUnitario) })) };
-        try { const res = await fetch('http://localhost:8080/api/orcamentos', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) }); if (res.ok) { document.querySelector('form').reset(); itensOrcamento = []; renderizarTabela(); localStorage.removeItem('borges_rascunho_itens'); window.location.href = "erp.html"; } } catch (erro) {} finally { btn.disabled = false; btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento`; lucide.createIcons(); }
+        try { const res = await fetch('https://borges-erp.onrender.com/api/orcamentos', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) }); if (res.ok) { document.querySelector('form').reset(); itensOrcamento = []; renderizarTabela(); localStorage.removeItem('borges_rascunho_itens'); window.location.href = "erp.html"; } } catch (erro) {} finally { btn.disabled = false; btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento`; lucide.createIcons(); }
     }
   </script>
 </body>

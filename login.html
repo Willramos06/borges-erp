@@ -65,7 +65,7 @@
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = "Autenticando..."; btn.disabled = true;
             try {
-                const resposta = await fetch('http://localhost:8080/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) });
+                const resposta = await fetch('https://borges-erp.onrender.com/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) });
                 if (resposta.ok) {
                     const dados = await resposta.json();
                     localStorage.setItem('borges_token', dados.token);
@@ -74,6 +74,9 @@
                         localStorage.removeItem('borges_rota_pendente');
                         window.location.href = rotaPendente;
                     } else { window.location.href = "erp.html"; }
+                } else {
+                    alert("E-mail ou senha incorretos!");
+                    btn.innerHTML = textoOriginal; btn.disabled = false;
                 }
             } catch (erro) { alert("Servidor indisponível."); btn.innerHTML = textoOriginal; btn.disabled = false; }
         });

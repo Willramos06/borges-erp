@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Borges ERP | Configurações da Empresa</title>
   
-  <!-- Ícone Fixo e Seguro (Sem manipulação via JS) -->
   <link rel="icon" type="image/png" href="./logomarca3d.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -137,7 +136,7 @@
 
     async function carregarConfiguracoes() {
         try {
-            const resposta = await fetch('http://localhost:8080/api/configuracoes', { headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } });
+            const resposta = await fetch('https://borges-erp.onrender.com/api/configuracoes', { headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } });
             if (resposta.status === 401 || resposta.status === 403) return window.location.href = 'login.html';
             
             if (resposta.ok) {
@@ -155,7 +154,6 @@
                 if (config.logoBase64) {
                     logoBase64Atual = config.logoBase64;
                     document.getElementById('preview-logo').innerHTML = `<img src="${logoBase64Atual}" class="w-full h-full object-contain">`;
-                    // A LÓGICA DE MANIPULAÇÃO DE FAVICON FOI REMOVIDA DAQUI
                 }
             }
         } catch (erro) { console.error("Falha ao carregar:", erro); }
@@ -184,7 +182,7 @@
             };
             
             try {
-                const resposta = await fetch('http://localhost:8080/api/configuracoes', { 
+                const resposta = await fetch('https://borges-erp.onrender.com/api/configuracoes', { 
                     method: 'PUT', 
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, 
                     body: JSON.stringify(payload) 
