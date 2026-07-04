@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Borges ERP | Novo Orçamento</title>
+  <link id="favicon" rel="icon" type="image/png" href="./logomarca3d.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { vermelho: "#AF2C2C", concreto: "#37474F", gesso: "#FAFAFA", cta: "#F59E0B" } } } }
+  </script>
+</head>
+<body class="bg-gesso font-sans text-concreto">
+  <main class="max-w-6xl mx-auto p-4 sm:p-8">
+    <div class="flex items-center justify-between mb-8 gap-4">
+      <div><h1 class="font-bold text-xl sm:text-2xl text-concreto">Novo Orçamento</h1><p class="text-xs sm:text-sm text-concreto/60">Geração de proposta financeira.</p></div>
+      <a href="erp.html" class="px-4 py-2 bg-concreto/10 rounded-lg text-xs sm:text-sm font-bold hover:bg-concreto/20 transition whitespace-nowrap">Voltar</a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-concreto/10 shadow-sm p-4 sm:p-8">
+      <form class="space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Busca de Cliente *</label><input type="text" id="buscaCliente" placeholder="Filtrar cliente..." class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2 mb-2 outline-none"><select id="clienteId" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"><option value="">Selecione...</option></select></div>
+          <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Descrição Resumida</label><input id="descricaoResumida" type="text" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
+        </div>
+
+        <div class="pt-6 border-t border-concreto/10">
+          <h3 class="font-bold text-concreto mb-4">Itens e Serviços</h3>
+          <div class="flex flex-col md:flex-row gap-4 mb-6 items-start md:items-end">
+            <div class="w-full md:w-1/4"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Tipo</label><select id="tipoItem" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none"><option value="SERVICO">Mão de Obra</option><option value="MATERIAL">Material</option><option value="SERVICO_MATERIAL">Mão de Obra c/ Mat.</option></select></div>
+            <div class="flex-1 w-full"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Item</label><select id="itemId" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none"><option value="">Selecione...</option></select></div>
+            <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+              <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Unid.</label><input id="unidadeMedida" type="text" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none uppercase text-center"></div>
+              <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Qtd.</label><input id="quantidade" type="text" oninput="aplicarMascaraNumero(this)" placeholder="1,00" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none text-center"></div>
+            </div>
+            <button id="btnAdicionarItem" class="w-full md:w-auto px-6 py-2.5 bg-concreto text-white font-bold rounded-xl h-[46px] flex items-center justify-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add</button>
+          </div>
+          
+          <div class="border border-concreto/10 rounded-xl overflow-hidden bg-gesso/50 overflow-x-auto w-full">
+            <table class="w-full text-sm min-w-[700px]">
+              <thead class="bg-concreto/5 text-concreto/70 uppercase text-[10px] font-bold">
+                <tr><th class="p-4 w-1/3">Descrição</th><th class="p-4">Tipo</th><th class="p-4 text-center">Unid.</th><th class="p-4 text-right">Qtd</th><th class="p-4 text-right">Vlr. Unitário</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Ação</th></tr>
+              </thead>
+              <tbody id="tabelaItens" class="divide-y divide-concreto/10"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 pt-6 border-t border-concreto/10">
+          <div class="w-full sm:w-1/4"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">BDI (%)</label><input id="bdiPercentual" type="text" oninput="aplicarMascaraNumero(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho" value="0,00"></div>
+          <div class="w-full sm:w-auto text-right bg-gesso p-4 rounded-xl border border-concreto/10"><p class="text-sm text-concreto/60">Subtotal Bruto</p><p id="valorSubtotalTela" class="font-bold text-concreto font-mono text-xl sm:text-2xl mt-1">R$ 0,00</p></div>
+        </div>
+        <div class="pt-6"><button type="submit" class="w-full py-4 rounded-xl font-bold bg-vermelho text-white flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento</button></div>
+      </form>
+    </div>
+  </main>
+  <script>
+    lucide.createIcons();
+    let itensOrcamento = []; let dependencias = { clientes: [], materiais: [], servicos: [] };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!localStorage.getItem('borges_token')) return window.location.href = 'login.html';
+        const rascunhoSalvo = localStorage.getItem('borges_rascunho_itens');
+        if (rascunhoSalvo) { itensOrcamento = JSON.parse(rascunhoSalvo); renderizarTabela(); }
+        await carregarDependencias(); configurarEventos(); aplicarLogoGlobal();
+    });
+
+    // SISTEMA GLOBAL DE LOGOMARCA (FAVICON, SIDEBAR E AVATAR)
+    async function aplicarLogoGlobal() {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch('http://localhost:8080/api/configuracoes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (resposta.ok) {
+                const config = await resposta.json();
+                if (config.logoBase64) {
+                    // Atualiza Sidebar (se existir na página)
+                    const logoSidebar = document.getElementById('sidebarLogo');
+                    if (logoSidebar) logoSidebar.src = config.logoBase64;
+                    
+                    // Atualiza Avatar do Admin (se existir na página)
+                    const adminCircle = document.getElementById('adminAvatar');
+                    if (adminCircle) {
+                        adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
+                        adminCircle.classList.remove('bg-vermelho/10'); 
+                        adminCircle.classList.add('bg-white', 'shadow-sm', 'border', 'border-concreto/10');
+                    }
+                }
+            }
+        } catch (erro) {
+            console.log("Erro ao carregar logo do banco:", erro);
+        }
+    }
+
+    function aplicarMascaraMoeda(i) { let v = i.value.replace(/\D/g, ''); if (v === '') v = '0'; i.value = (parseInt(v) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+    function formatarValorParaTela(v) { return v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+    function aplicarMascaraNumero(i) { let v = i.value.replace(/\D/g, ''); if (v === '') v = '0'; i.value = (parseInt(v) / 100).toFixed(2).replace('.', ','); }
+    function desformatarParaCalculo(v) { return parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0; }
+
+    let tempoInativo; function resetarTempoInatividade() { clearTimeout(tempoInativo); tempoInativo = setTimeout(() => { alert("Sessão expirada."); localStorage.setItem('borges_rota_pendente', 'novo-orcamento.html'); localStorage.removeItem('borges_token'); window.location.href = 'login.html'; }, 600000); } window.onload = window.onmousemove = window.onkeypress = resetarTempoInatividade;
+
+    async function carregarDependencias() {
+        try {
+            const headers = { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` };
+            const [rC, rM, rS] = await Promise.all([fetch('http://localhost:8080/api/clientes', { headers }), fetch('http://localhost:8080/api/materiais', { headers }), fetch('http://localhost:8080/api/servicos', { headers })]);
+            if (rC.status === 401 || rC.status === 403) return window.location.href = 'login.html';
+            dependencias.clientes = await rC.json(); dependencias.clientes.sort((a, b) => a.nomeRazaoSocial.localeCompare(b.nomeRazaoSocial));
+            dependencias.materiais = await rM.json(); dependencias.servicos = await rS.json();
+            preencherDropdown('clienteId', dependencias.clientes, 'id', 'nomeRazaoSocial'); atualizarDropdownItens(); 
+        } catch (e) {}
+    }
+
+    function preencherDropdown(id, lista, vp, tp) { const sel = document.getElementById(id); sel.innerHTML = '<option value="">Selecione...</option>'; lista.forEach(i => sel.innerHTML += `<option value="${i[vp]}">${i[tp]}</option>`); }
+    function atualizarDropdownItens() { const tipo = document.getElementById('tipoItem').value; preencherDropdown('itemId', tipo === 'MATERIAL' ? dependencias.materiais : dependencias.servicos, 'id', 'descricao'); document.getElementById('unidadeMedida').value = tipo === 'MATERIAL' ? 'UN' : 'H'; }
+    function configurarEventos() {
+        document.getElementById('tipoItem').addEventListener('change', atualizarDropdownItens);
+        document.getElementById('btnAdicionarItem').addEventListener('click', adicionarItemTemporario);
+        document.querySelector('form').addEventListener('submit', salvarOrcamento);
+        document.getElementById('buscaCliente').addEventListener('input', e => { const termo = e.target.value.toLowerCase(); Array.from(document.getElementById('clienteId').options).forEach(opt => { if (opt.value !== "") opt.style.display = opt.text.toLowerCase().includes(termo) ? '' : 'none'; }); });
+    }
+
+    function adicionarItemTemporario(e) {
+        e.preventDefault(); const t = document.getElementById('tipoItem').value, id = document.getElementById('itemId').value, q = document.getElementById('quantidade').value, u = document.getElementById('unidadeMedida').value || 'UN';
+        if (!id || !q || desformatarParaCalculo(q) <= 0) return alert("Erro no item.");
+        const itemSelecionado = (t === 'MATERIAL' ? dependencias.materiais : dependencias.servicos).find(i => i.id == id);
+        itensOrcamento.push({ tipoItem: t, materialId: t === 'MATERIAL' ? parseInt(id) : null, servicoId: t !== 'MATERIAL' ? parseInt(id) : null, unidadeMedida: u.toUpperCase(), quantidade: desformatarParaCalculo(q), valorUnitario: itemSelecionado.valorVenda, descricaoVisual: itemSelecionado.descricao });
+        renderizarTabela(); localStorage.setItem('borges_rascunho_itens', JSON.stringify(itensOrcamento)); document.getElementById('itemId').value = ''; document.getElementById('quantidade').value = '';
+    }
+
+    window.atualizarValorItem = function(idx, obj) { itensOrcamento[idx].valorUnitario = desformatarParaCalculo(obj.value); renderizarTabela(); localStorage.setItem('borges_rascunho_itens', JSON.stringify(itensOrcamento)); };
+    window.removerItem = function(idx) { itensOrcamento.splice(idx, 1); renderizarTabela(); localStorage.setItem('borges_rascunho_itens', JSON.stringify(itensOrcamento)); };
+
+    function renderizarTabela() {
+        const tbody = document.getElementById('tabelaItens'); tbody.innerHTML = ''; let sub = 0;
+        itensOrcamento.forEach((i, idx) => {
+            const t = i.quantidade * i.valorUnitario; sub += t;
+            tbody.innerHTML += `<tr class="border-b text-sm"><td class="py-3 px-4 font-semibold">${i.descricaoVisual}</td><td class="py-3 px-4">${i.tipoItem}</td><td class="py-3 px-4 text-center font-bold">${i.unidadeMedida}</td><td class="py-3 px-4 text-right">${formatarValorParaTela(i.quantidade)}</td><td class="py-3 px-4 text-right">R$ <input type="text" value="${formatarValorParaTela(i.valorUnitario)}" oninput="aplicarMascaraMoeda(this)" onchange="atualizarValorItem(${idx}, this)" class="w-20 sm:w-24 bg-transparent border-b outline-none text-right font-mono font-bold text-cta"></td><td class="py-3 px-4 text-right font-semibold text-vermelho">R$ ${formatarValorParaTela(t)}</td><td class="py-3 px-4 text-center"><button type="button" onclick="removerItem(${idx})" class="p-2 text-concreto/30 hover:text-vermelho"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+        }); document.getElementById('valorSubtotalTela').textContent = `R$ ${formatarValorParaTela(sub)}`; lucide.createIcons();
+    }
+
+    async function salvarOrcamento(e) {
+        e.preventDefault(); if (itensOrcamento.length === 0) return alert("Adicione itens.");
+        const btn = document.querySelector('form button[type="submit"]'); btn.disabled = true; btn.innerHTML = "Salvando...";
+        let sub = 0; itensOrcamento.forEach(i => sub += (i.quantidade * i.valorUnitario)); const bdi = desformatarParaCalculo(document.getElementById('bdiPercentual').value), tot = sub + (sub * (bdi / 100));
+        const payload = { cliente: { id: parseInt(document.getElementById('clienteId').value) }, descricaoResumida: document.getElementById('descricaoResumida').value, bdiPercentual: bdi, valorSubtotal: sub, valorTotal: tot, status: "Pendente", itens: itensOrcamento.map(i => ({ tipoItem: i.tipoItem, materialId: i.materialId, servicoId: i.servicoId, unidadeMedida: i.unidadeMedida, quantidade: i.quantidade, valorUnitario: i.valorUnitario, valorTotalItem: (i.quantidade * i.valorUnitario) })) };
+        try { const res = await fetch('http://localhost:8080/api/orcamentos', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) }); if (res.ok) { document.querySelector('form').reset(); itensOrcamento = []; renderizarTabela(); localStorage.removeItem('borges_rascunho_itens'); window.location.href = "erp.html"; } } catch (erro) {} finally { btn.disabled = false; btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento`; lucide.createIcons(); }
+    }
+  </script>
+</body>
+</html>

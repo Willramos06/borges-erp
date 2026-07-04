@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Borges ERP - Painel Central</title>
+
+  <!-- O ÍCONE DA ABA DO NAVEGADOR AGORA É FIXO E LOCAL -->
+  <link rel="icon" type="image/png" href="./logomarca3d.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            vermelho: "#AF2C2C", concreto: "#37474F", gesso: "#FAFAFA", cta: "#F59E0B",
+            status: { concluido: "#10B981", andamento: "#F59E0B", autorizado: "#3B82F6", pendente: "#EAB308", recusado: "#EF4444" }
+          },
+          fontFamily: { title: ['Montserrat', 'sans-serif'], body: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-gesso font-body text-concreto antialiased flex h-screen overflow-hidden">
+
+  <!-- OVERLAY MENU MOBILE -->
+  <div id="mobileOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-concreto/50 z-40 hidden md:hidden transition-opacity"></div>
+
+  <!-- SIDEBAR (Responsiva) -->
+  <aside id="sidebar" class="w-64 bg-concreto text-white flex flex-col shadow-xl z-50 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-white/10 bg-concreto hover:bg-concreto/90 cursor-pointer">
+      <div class="flex items-center gap-3">
+        <img src="./logomarca3d.png" id="sidebarLogo" class="w-12 h-12 shrink-0 object-contain" alt="Logo Borges">
+        <div>
+          <div class="font-title font-extrabold text-sm tracking-wider leading-tight">BORGES ERP</div>
+          <div class="text-[10px] text-white/50 font-medium">Gestão Inteligente</div>
+        </div>
+      </div>
+      <button onclick="toggleMenu()" class="md:hidden text-white/50 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+
+    <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+      <a href="erp.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-vermelho text-white font-medium shadow-md">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+      </a>
+      <a href="novo-orcamento.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
+        <i data-lucide="file-text" class="w-5 h-5"></i> Orçamentos
+      </a>
+      <a href="clientes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
+        <i data-lucide="users" class="w-5 h-5"></i> Clientes
+      </a>
+      <a href="cadastros-servico.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
+        <i data-lucide="hammer" class="w-5 h-5"></i> Serviços
+      </a>
+      <a href="cadastros-material.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
+        <i data-lucide="package" class="w-5 h-5"></i> Materiais
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-white/10">
+      <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
+        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+      </a>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 flex flex-col h-screen overflow-y-auto w-full relative">
+    
+    <header class="h-20 bg-white border-b border-concreto/10 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-4 w-full sm:w-auto">
+        <button onclick="toggleMenu()" class="md:hidden p-2 text-concreto hover:bg-gesso rounded-lg">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+
+        <div class="hidden sm:flex items-center gap-4 bg-gesso px-4 py-2.5 rounded-xl border border-concreto/10 w-96 focus-within:border-vermelho/50 focus-within:ring-2 focus-within:ring-vermelho/20 transition-all">
+          <i data-lucide="search" class="w-5 h-5 text-concreto/50"></i>
+          <input type="text" placeholder="Buscar orçamento, cliente..." class="bg-transparent border-none outline-none w-full text-sm text-concreto placeholder:text-concreto/50">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+        <button class="p-2 sm:p-2.5 rounded-full hover:bg-gesso text-concreto/70 transition-colors relative">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-vermelho rounded-full"></span>
+        </button>
+        <div class="h-8 w-px bg-concreto/10 hidden sm:block"></div>
+        <div class="flex items-center gap-3 cursor-pointer">
+          <div id="adminAvatar" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-vermelho/10 text-vermelho flex items-center justify-center font-bold font-title text-sm sm:text-base">
+            CB
+          </div>
+          <div class="hidden md:block">
+            <div class="text-sm font-bold text-concreto leading-none">Admin Borges</div>
+            <div class="text-xs text-concreto/50 mt-1">Diretoria</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-4 sm:p-8 space-y-6 sm:space-y-8 w-full max-w-[100vw] overflow-x-hidden">
+
+      <div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <div>
+            <h1 class="font-title font-extrabold text-xl sm:text-2xl text-concreto">Visão Geral (Financeiro)</h1>
+            <p class="text-xs sm:text-sm text-concreto/70 mt-1">Dados baseados em orçamentos <strong class="text-status-concluido">Concluídos</strong>.</p>
+          </div>
+          <select id="filtroDataDashboard" onchange="carregarDashboard()" class="w-full sm:w-auto bg-white border border-concreto/20 rounded-xl px-4 py-2 text-sm font-semibold text-concreto shadow-sm outline-none focus:border-vermelho">
+              <option value="7">Últimos 7 dias</option>
+              <option value="30" selected>Últimos 30 dias</option>
+              <option value="90">Últimos 3 meses</option>
+              <option value="365">1 Ano</option>
+              <option value="0">Todo o período</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div class="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="bg-white p-5 sm:p-6 rounded-2xl border border-concreto/10 shadow-sm flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-concreto/5 flex items-center justify-center text-concreto">
+                  <i data-lucide="wallet" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-6">
+                <div class="text-xs sm:text-sm font-semibold text-concreto/60">Faturamento Bruto</div>
+                <div id="dashFaturamento" class="font-title font-extrabold text-2xl sm:text-3xl text-concreto mt-1">R$ 0,00</div>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 sm:p-6 rounded-2xl border border-concreto/10 shadow-sm flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-status-recusado/10 flex items-center justify-center text-status-recusado">
+                  <i data-lucide="trending-down" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-6">
+                <div class="text-xs sm:text-sm font-semibold text-concreto/60">Custos (Insumos/MO)</div>
+                <div id="dashCustos" class="font-title font-extrabold text-2xl sm:text-3xl text-concreto mt-1">R$ 0,00</div>
+              </div>
+            </div>
+
+            <div class="bg-concreto text-white p-5 sm:p-6 rounded-2xl shadow-lg sm:col-span-2 flex flex-col justify-between relative overflow-hidden">
+              <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+              <div class="flex items-center gap-3 relative z-10">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-status-concluido/20 flex items-center justify-center text-status-concluido">
+                  <i data-lucide="piggy-bank" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+                <div class="text-base sm:text-lg font-semibold text-white/90">Lucro Real Líquido</div>
+              </div>
+              <div class="mt-4 relative z-10 flex items-end justify-between">
+                <div id="dashLucro" class="font-title font-extrabold text-3xl sm:text-5xl text-white">R$ 0,00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 sm:p-6 rounded-2xl border border-concreto/10 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="font-title font-bold text-base sm:text-lg text-concreto">Fluxo Financeiro Mensal</h2>
+            </div>
+            <div class="w-full h-48 sm:h-64 relative">
+              <canvas id="graficoFluxo"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculadora Rápida -->
+      <div class="bg-white p-6 rounded-2xl border border-concreto/10 shadow-sm flex flex-col max-w-full lg:max-w-2xl">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-cta/20 flex items-center justify-center text-cta">
+            <i data-lucide="calculator" class="w-5 h-5"></i>
+          </div>
+          <h2 class="font-title font-bold text-lg text-concreto">Calc. Impostos Rápida</h2>
+        </div>
+        
+        <div class="space-y-4 flex-1">
+          <div>
+            <label class="block text-xs font-bold text-concreto/70 mb-1 uppercase tracking-wide">Valor Base do Serviço (R$)</label>
+            <input id="valorBaseCalc" type="text" value="10.000,00" oninput="formatarInputMoeda(this)" class="w-full bg-gesso border border-concreto/20 rounded-lg px-3 py-2.5 text-concreto font-semibold outline-none focus:border-cta transition">
+          </div>
+          
+          <div>
+            <label class="block text-xs font-bold text-concreto/70 mb-1 uppercase tracking-wide">Situação do Serviço (Base INSS)</label>
+            <div class="flex bg-gesso rounded-lg p-1 border border-concreto/10">
+              <button type="button" id="btnInss50" onclick="alterarBaseInss(50)" class="flex-1 py-1.5 text-sm font-bold rounded-md bg-white shadow-sm text-concreto">Mat. + M.O (50%)</button>
+              <button type="button" id="btnInss100" onclick="alterarBaseInss(100)" class="flex-1 py-1.5 text-sm font-semibold rounded-md text-concreto/60 hover:text-concreto transition-colors">Só M.O (100%)</button>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-concreto/10 space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-concreto/70">INSS (11% s/ Base Ajustada):</span>
+              <span id="resInss" class="font-semibold text-status-recusado">R$ 550,00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-concreto/70">ISS (3%):</span>
+              <span id="resIss" class="font-semibold text-status-recusado">R$ 300,00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-concreto/70">Municipal (2,81%):</span>
+              <span id="resMun" class="font-semibold text-status-recusado">R$ 281,00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-concreto/70">Federal (13,45%):</span>
+              <span id="resFed" class="font-semibold text-status-recusado">R$ 1.345,00</span>
+            </div>
+            <div class="flex justify-between text-sm pt-2 mt-2 border-t border-concreto/10">
+              <span class="font-bold text-concreto">Total de Impostos:</span>
+              <span id="resTotalImpostos" class="font-bold text-vermelho">R$ 2.476,00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-gesso rounded-xl border border-concreto/10 flex items-center justify-between">
+          <span class="text-sm font-bold text-concreto">Valor Final Sugerido:</span>
+          <span id="resValorFinal" class="font-title font-extrabold text-lg text-concreto">R$ 12.476,00</span>
+        </div>
+      </div>
+
+      <div class="mt-8 pb-12">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h2 class="font-title font-extrabold text-lg sm:text-xl text-concreto">Gestão de Orçamentos</h2>
+          
+          <a href="novo-orcamento.html" class="bg-vermelho text-white font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-vermelho/90 transition flex items-center justify-center gap-2 w-full sm:w-fit text-sm">
+            <i data-lucide="plus" class="w-4 h-4 sm:w-5 sm:h-5"></i> Novo Orçamento
+          </a>
+        </div>
+
+        <div class="bg-white border border-concreto/10 rounded-2xl shadow-sm overflow-hidden w-full">
+          <div class="overflow-x-auto w-full">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr class="bg-gesso border-b border-concreto/10">
+                  <th class="p-4 text-xs font-bold text-concreto/70 uppercase tracking-wider">Código</th>
+                  <th class="p-4 text-xs font-bold text-concreto/70 uppercase tracking-wider">Cliente</th>
+                  <th class="p-4 text-xs font-bold text-concreto/70 uppercase tracking-wider">Valor Total</th>
+                  <th class="p-4 text-xs font-bold text-concreto/70 uppercase tracking-wider">Situação</th>
+                  <th class="p-4 text-xs font-bold text-concreto/70 uppercase tracking-wider text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaOrcamentos" class="divide-y divide-concreto/5">
+                <!-- Preenchido via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="paginacaoControles" class="flex flex-col sm:flex-row items-center justify-between mt-6 px-2 gap-4">
+          <div class="text-xs sm:text-sm text-concreto/70 order-2 sm:order-1">
+            Página <span id="pagAtual" class="font-bold text-concreto">1</span> de <span id="pagTotal" class="font-bold text-concreto">1</span>
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto order-1 sm:order-2">
+            <button id="btnAnt" onclick="mudarPagina(-1)" class="flex-1 sm:flex-none px-4 py-2 bg-white border border-concreto/20 rounded-xl text-sm font-bold text-concreto hover:bg-gesso disabled:opacity-50 transition shadow-sm">
+              Anterior
+            </button>
+            <button id="btnProx" onclick="mudarPagina(1)" class="flex-1 sm:flex-none px-4 py-2 bg-white border border-concreto/20 rounded-xl text-sm font-bold text-concreto hover:bg-gesso disabled:opacity-50 transition shadow-sm">
+              Próxima
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+      
+  <script>
+    lucide.createIcons();
+    let paginaAtual = 0;
+
+    function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('borges_token');
+        if (!token) {
+            window.location.href = 'login.html';
+            return;
+        }
+        carregarOrcamentos();
+        carregarDashboard(); 
+        aplicarLogoGlobal(); 
+        renderizarGraficoFluxo(); 
+        calcularImpostos(); 
+    });
+
+    // SISTEMA DA LOGO REVISADO (Sem mexer no Favicon)
+    async function aplicarLogoGlobal() {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch('http://localhost:8080/api/configuracoes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (resposta.ok) {
+                const config = await resposta.json();
+                if (config.logoBase64) {
+                    // Atualiza Sidebar
+                    const logoSidebar = document.getElementById('sidebarLogo');
+                    if (logoSidebar) logoSidebar.src = config.logoBase64;
+                    
+                    // Atualiza Avatar do Admin
+                    const adminCircle = document.getElementById('adminAvatar');
+                    if (adminCircle) {
+                        adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
+                        adminCircle.classList.remove('bg-vermelho/10'); 
+                        adminCircle.classList.add('bg-white', 'shadow-sm', 'border', 'border-concreto/10');
+                    }
+                    // NOTA: Favicon foi removido daqui para evitar o bloqueio do Google Chrome.
+                }
+            }
+        } catch (erro) {
+            console.log("Erro ao carregar logo do banco:", erro);
+        }
+    }
+
+    function renderizarGraficoFluxo() {
+        const ctx = document.getElementById('graficoFluxo').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Faturamento',
+                    data: [2500, 4200, 3100, 8500, 6000, 10850],
+                    borderColor: '#AF2C2C',
+                    backgroundColor: 'rgba(175, 44, 44, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    let porcentagemInssCalc = 50;
+
+    function formatarInputMoeda(elemento) {
+        let valorNumerico = elemento.value.replace(/\D/g, ''); 
+        if (valorNumerico === '') valorNumerico = '0';
+        let valorDecimal = (parseInt(valorNumerico) / 100).toFixed(2);
+        elemento.value = valorDecimal.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        calcularImpostos();
+    }
+
+    function alterarBaseInss(porcentagem) {
+        porcentagemInssCalc = porcentagem;
+        const btn50 = document.getElementById('btnInss50');
+        const btn100 = document.getElementById('btnInss100');
+        if (porcentagem === 50) {
+            btn50.className = 'flex-1 py-1.5 text-sm font-bold rounded-md bg-white shadow-sm text-concreto';
+            btn100.className = 'flex-1 py-1.5 text-sm font-semibold rounded-md text-concreto/60 hover:text-concreto transition-colors';
+        } else {
+            btn100.className = 'flex-1 py-1.5 text-sm font-bold rounded-md bg-white shadow-sm text-concreto';
+            btn50.className = 'flex-1 py-1.5 text-sm font-semibold rounded-md text-concreto/60 hover:text-concreto transition-colors';
+        }
+        calcularImpostos();
+    }
+
+    function calcularImpostos() {
+        const inputElem = document.getElementById('valorBaseCalc');
+        if (!inputElem) return;
+        const valorBruto = parseFloat(inputElem.value.replace(/\./g, '').replace(',', '.')) || 0;
+        const baseCalculoInss = valorBruto * (porcentagemInssCalc / 100);
+        
+        const inss = baseCalculoInss * 0.11;      
+        const iss = valorBruto * 0.03;            
+        const municipal = valorBruto * 0.0281;    
+        const federal = valorBruto * 0.1345;      
+        
+        const totalImpostos = inss + iss + municipal + federal;
+        const valorFinalSugerido = valorBruto + totalImpostos; 
+
+        const exibirMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('resInss').innerText = exibirMoeda(inss);
+        document.getElementById('resIss').innerText = exibirMoeda(iss);
+        document.getElementById('resMun').innerText = exibirMoeda(municipal);
+        document.getElementById('resFed').innerText = exibirMoeda(federal);
+        document.getElementById('resTotalImpostos').innerText = exibirMoeda(totalImpostos);
+        document.getElementById('resValorFinal').innerText = exibirMoeda(valorFinalSugerido);
+    }
+
+    let tempoInativo;
+    function resetarTempoInatividade() {
+        clearTimeout(tempoInativo);
+        tempoInativo = setTimeout(() => {
+            alert("Sessão expirada por inatividade.");
+            localStorage.setItem('borges_rota_pendente', 'erp.html');
+            localStorage.removeItem('borges_token');
+            window.location.href = 'login.html';
+        }, 600000); 
+    }
+    window.onload = resetarTempoInatividade;
+    document.onmousemove = resetarTempoInatividade;
+    document.onkeypress = resetarTempoInatividade;
+
+    function verificarAutenticacao(status) {
+        if (status === 401 || status === 403) {
+            localStorage.setItem('borges_rota_pendente', 'erp.html');
+            localStorage.removeItem('borges_token');
+            window.location.href = 'login.html';
+            return false;
+        }
+        return true;
+    }
+
+    async function carregarDashboard() {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const diasSelecionados = document.getElementById('filtroDataDashboard') ? document.getElementById('filtroDataDashboard').value : '30';
+            
+            const resposta = await fetch(`http://localhost:8080/api/orcamentos/dashboard?dias=${diasSelecionados}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!verificarAutenticacao(resposta.status)) return;
+            
+            const dados = await resposta.json();
+            const formatarMoeda = (valor) => `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`;
+            
+            document.getElementById('dashFaturamento').innerText = formatarMoeda(dados.faturamento);
+            document.getElementById('dashCustos').innerText = formatarMoeda(dados.custos);
+            document.getElementById('dashLucro').innerText = formatarMoeda(dados.lucro);
+        } catch (erro) {
+            console.log("Erro no dashboard:", erro);
+        }
+    }
+
+    function renderizarTabelaOrcamentos(orcamentos) {
+        const tbody = document.getElementById('tabelaOrcamentos');
+        if (!tbody) return;
+        tbody.innerHTML = ''; 
+        const formatarMoeda = (valor) => `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`;
+
+        orcamentos.forEach(orc => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-gesso/50 transition";
+            const s = (orc.status || "Pendente").toLowerCase();
+            let classeStatusBg = s.includes('concluí') ? "bg-status-concluido/10 text-status-concluido" : 
+                                 s.includes('andamento') ? "bg-status-andamento/10 text-status-andamento" : 
+                                 "bg-concreto/10 text-concreto";
+
+            tr.innerHTML = `
+                <td class="p-4 font-mono text-sm font-semibold text-concreto">${orc.codigoVisual || '-'}</td>
+                <td class="p-4 font-semibold text-concreto text-sm">${orc.cliente ? orc.cliente.nomeRazaoSocial : '-'}</td>
+                <td class="p-4 font-semibold text-concreto text-sm">${formatarMoeda(orc.valorTotal || 0)}</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md ${classeStatusBg} text-xs font-bold">
+                    <select onchange="atualizarStatus(${orc.id}, this.value)" class="bg-transparent border-none outline-none font-bold text-xs cursor-pointer appearance-none text-inherit">
+                        <option value="Pendente" ${s.includes('pendente') ? 'selected' : ''} class="text-concreto">Pendente</option>
+                        <option value="Em Andamento" ${s.includes('andamento') ? 'selected' : ''} class="text-concreto">Em Andamento</option>
+                        <option value="Concluído" ${s.includes('concluí') ? 'selected' : ''} class="text-concreto">Concluído</option>
+                    </select>
+                  </span>
+                </td>
+                <td class="p-4 text-right space-x-2">
+                  <button onclick="gerarPDF(${orc.id})" class="p-2 text-concreto/50 hover:text-vermelho bg-white border border-concreto/10 rounded-lg shadow-sm" title="Baixar Orçamento">
+                    <i data-lucide="file-down" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="gerarContratoPDF(${orc.id})" class="p-2 text-concreto/50 hover:text-cta bg-white border border-concreto/10 rounded-lg shadow-sm" title="Gerar Contrato">
+                    <i data-lucide="file-signature" class="w-4 h-4"></i>
+                  </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        lucide.createIcons();
+    }
+
+    async function carregarOrcamentos() {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch(`http://localhost:8080/api/orcamentos?page=${paginaAtual}&size=10`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!verificarAutenticacao(resposta.status)) return;
+            const dadosPaginados = await resposta.json();
+            renderizarTabelaOrcamentos(dadosPaginados.content);
+            atualizarBotoesPaginacao(dadosPaginados);
+        } catch (erro) {}
+    }
+
+    function atualizarBotoesPaginacao(dados) {
+        document.getElementById('btnAnt').disabled = dados.first; 
+        document.getElementById('btnProx').disabled = dados.last; 
+        document.getElementById('pagAtual').innerText = dados.number + 1; 
+        document.getElementById('pagTotal').innerText = dados.totalPages || 1;
+    }
+
+    function mudarPagina(direcao) {
+        paginaAtual += direcao;
+        carregarOrcamentos();
+    }
+
+    async function atualizarStatus(id, novoStatus) {
+        try {
+            const token = localStorage.getItem('borges_token');
+            await fetch(`http://localhost:8080/api/orcamentos/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ status: novoStatus })
+            });
+            carregarOrcamentos(); carregarDashboard();  
+        } catch (erro) {}
+    }
+
+    // =========================================================================
+    // GERADOR DE PDF DE ORÇAMENTO E CONTRATOS
+    // =========================================================================
+    async function gerarPDF(id) {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const headers = { 'Authorization': `Bearer ${token}` };
+            
+            const [resOrc, resConfig] = await Promise.all([
+                fetch(`http://localhost:8080/api/orcamentos/${id}`, { headers }),
+                fetch('http://localhost:8080/api/configuracoes', { headers }).catch(() => null)
+            ]);
+            
+            if (!verificarAutenticacao(resOrc.status)) return;
+            
+            const orc = await resOrc.json();
+            const config = resConfig && resConfig.ok ? await resConfig.json() : {}; 
+            
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+            const numOrc = (orc.codigoVisual || `00000000${orc.id}`).padStart(8, '0');
+            const nomeCli = orc.cliente ? orc.cliente.nomeRazaoSocial : 'Cliente não informado';
+            const docCli = orc.cliente ? orc.cliente.documento : '';
+            const endCli = orc.cliente ? `${orc.cliente.rua || ''}, ${orc.cliente.numero || ''} ${orc.cliente.complemento ? ' - ' + orc.cliente.complemento : ''} - ${orc.cliente.bairro || ''} - ${orc.cliente.cep || ''} - ${orc.cliente.cidade || ''} - ${orc.cliente.estado || ''}` : '';
+            const contatoCli = orc.cliente ? orc.cliente.contato : '';
+
+            const linhasItens = orc.itens && orc.itens.length > 0 ? orc.itens.map((item, i) => `
+                <tr>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${i + 1}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${item.descricaoVisual || item.tipoItem}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: center;">${item.unidadeMedida || 'UN'}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.quantidade}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.valorUnitario.toFixed(2).replace('.', ',')}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">0,00</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.valorTotalItem.toFixed(2).replace('.', ',')}</td>
+                </tr>
+            `).join('') : `<tr><td colspan="7" style="padding: 8px; border: 1px solid #ccc; text-align: center;">Nenhum item adicionado</td></tr>`;
+
+            const elementoTemp = document.createElement('div');
+            elementoTemp.innerHTML = `
+                <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; width: 100%; box-sizing: border-box;">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <div style="width: 25%;">
+                            <img src="${config.logoBase64 || './logomarca3d.png'}" style="max-height: 50px;" alt="Logo">
+                        </div>
+                        <div style="width: 50%; text-align: center; font-size: 11px; line-height: 1.4;">
+                            <strong>${config.nomeEmpresa || 'CONSTRUTORA BORGES SOLUÇÕES LTDA'}</strong><br>
+                            ${config.email || 'sistema.borges@gmail.com'} - ${config.celular || '(21) 96717-6069'}<br>
+                            CNPJ: ${config.cnpj || '59.981.699/0001-60'}<br>
+                            ${config.cidade || 'Caratinga'} - ${config.estado || 'MG'}
+                        </div>
+                        <div style="width: 25%; text-align: right;">
+                            <h2 style="margin: 0; font-size: 18px; font-weight: normal; color: #000;">Orçamento</h2>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 5px 0; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 10px;">
+                        <div>Não é documento fiscal | Não é válido como recibo e como garantia de mercadoria | Não comprova pagamento</div>
+                        <div style="text-align: right;">
+                            <strong style="font-size: 12px;">${numOrc}</strong><br>
+                            Data: ${dataAtual}
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                        <h3 style="margin: 0 0 5px 0; font-size: 14px;">Dados do cliente</h3>
+                        <div style="font-size: 11px; line-height: 1.5;">
+                            ${nomeCli} | ${contatoCli}<br>
+                            CPF/CNPJ: ${docCli}<br>
+                            ${endCli}
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 14px;">Informações do objeto</h3>
+                        <div style="font-size: 11px;">
+                            <strong>Descrição do Objeto:</strong> ${orc.descricaoResumida || 'Obras e Reformas'}
+                        </div>
+                        
+                        <h3 style="margin: 15px 0 5px 0; font-size: 14px;">Itens</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                            <thead>
+                                <tr style="background-color: #f9f9f9;">
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: left;">Código</th>
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: left;">Descrição</th>
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: center;">Unidade</th>
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">Quantidade</th>
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">Valor unit. R$</th>
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">Desconto R$</th>
+                                    <th style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">Total R$</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${linhasItens}
+                            </tbody>
+                        </table>
+
+                        <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                            <div style="width: 60%; line-height: 1.6;">
+                                <strong>Formas de pagamento:</strong><br>
+                                - A combinar<br>
+                                <strong>Situação:</strong> ${orc.status || 'Pendente'}<br>
+                                <strong>Validade:</strong> 15 dias<br>
+                            </div>
+                            <div style="width: 40%; text-align: right; line-height: 1.6;">
+                                Subtotal R$: <strong>${(orc.valorSubtotal || orc.valorTotal).toFixed(2).replace('.', ',')}</strong><br>
+                                Desconto R$: 0,00<br>
+                                Acréscimo (BDI) R$: ${((orc.valorTotal || 0) - (orc.valorSubtotal || 0)).toFixed(2).replace('.', ',')}<br>
+                                <span style="font-size: 14px;"><strong>Total geral R$: ${(orc.valorTotal || 0).toFixed(2).replace('.', ',')}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 50px; font-size: 11px;">
+                        <div style="width: 300px; border-bottom: 1px solid #000; margin-bottom: 5px;"></div>
+                        Assinatura do Solicitante
+                        <div style="text-align: right; margin-top: 30px; font-size: 9px; color: #666;">
+                            Relatório gerado em ${dataAtual} pelo sistema Borges ERP
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const opcoes = {
+                margin:       5,
+                filename:     `Orcamento_${numOrc}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opcoes).from(elementoTemp).save();
+        } catch (erro) {
+            console.error("Falha na geração do PDF:", erro);
+            alert("Erro ao gerar PDF.");
+        }
+    }
+
+    async function gerarContratoPDF(id) {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const headers = { 'Authorization': `Bearer ${token}` };
+
+            const [resOrc, resConfig] = await Promise.all([
+                fetch(`http://localhost:8080/api/orcamentos/${id}`, { headers }),
+                fetch('http://localhost:8080/api/configuracoes', { headers })
+            ]);
+
+            if (!verificarAutenticacao(resOrc.status)) return;
+
+            const orc = await resOrc.json();
+            const config = await resConfig.json();
+
+            const formatarMoeda = (valor) => `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`;
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+
+            const nomeCliente = orc.cliente && orc.cliente.nomeRazaoSocial ? orc.cliente.nomeRazaoSocial : 'Cliente_Nao_Informado';
+            const docCliente = orc.cliente && orc.cliente.documento ? orc.cliente.documento : '___.___.___-__';
+            const ruaCliente = orc.cliente && orc.cliente.rua ? orc.cliente.rua : '_________________';
+            const numCliente = orc.cliente && orc.cliente.numero ? orc.cliente.numero : '___';
+            const bairroCliente = orc.cliente && orc.cliente.bairro ? orc.cliente.bairro : '_________________';
+            const cidadeCliente = orc.cliente && orc.cliente.cidade ? orc.cliente.cidade : '_________________';
+            const estadoCliente = orc.cliente && orc.cliente.estado ? orc.cliente.estado : '___';
+            
+            const codigoOrcamento = orc.codigoVisual ? orc.codigoVisual : `ID-${orc.id}`;
+            const descricaoOrcamento = orc.descricaoResumida ? orc.descricaoResumida : 'Obras e Reformas';
+
+            const elementoTemp = document.createElement('div');
+            
+            elementoTemp.innerHTML = `
+                <div style="font-family: 'Times New Roman', serif; padding: 50px; color: #000; line-height: 1.6; font-size: 14px; text-align: justify;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <img src="${config.logoBase64 || './logomarca3d.png'}" style="height: 80px;">
+                    </div>
+                    <h2 style="text-align: center; font-weight: bold; margin-bottom: 40px; font-size: 18px;">CONTRATO DE PRESTAÇÃO DE SERVIÇOS NA CONSTRUÇÃO CIVIL</h2>
+
+                    <p><strong>CONTRATADA:</strong> ${config.nomeEmpresa || 'Construtora'}, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº ${config.cnpj || '___'}, com sede na ${config.endereco || 'Endereço não informado'}, cidade de ${config.cidade || '-'} - ${config.estado || '-'}, neste ato representada por seu administrador.</p>
+
+                    <p><strong>CONTRATANTE:</strong> ${nomeCliente}, inscrito(a) no documento nº ${docCliente}, com endereço na ${ruaCliente}, nº ${numCliente} - ${bairroCliente}, cidade de ${cidadeCliente} - ${estadoCliente}.</p>
+
+                    <p>As partes acima identificadas e qualificadas têm, entre si, justo e acertado o presente Contrato de Prestação de Serviços, que se regerá pelas cláusulas seguintes:</p>
+
+                    <h4 style="margin-top: 25px; text-decoration: underline;">CLÁUSULA 1ª - DO OBJETO DO CONTRATO</h4>
+                    <p>O presente contrato tem como objeto a prestação de serviços descritos no Orçamento de código <strong>${codigoOrcamento}</strong> (Referência: ${descricaoOrcamento}), que foi previamente aprovado e passa a fazer parte integrante deste instrumento.</p>
+
+                    <h4 style="margin-top: 25px; text-decoration: underline;">CLÁUSULA 2ª - DO VALOR E FORMA DE PAGAMENTO</h4>
+                    <p>Pelos serviços prestados, a CONTRATANTE pagará à CONTRATADA o valor total e irreajustável de <strong>${formatarMoeda(orc.valorTotal)}</strong>. Os prazos, vencimentos e parcelamentos obedecerão estritamente ao alinhamento comercial prévio firmado entre as partes.</p>
+
+                    <h4 style="margin-top: 25px; text-decoration: underline;">CLÁUSULA 3ª - DAS OBRIGAÇÕES DAS PARTES</h4>
+                    <p><strong>I. Da CONTRATADA:</strong> Executar os serviços com zelo, utilizando as melhores técnicas da engenharia e construção civil, zelando pela segurança na obra e pelo cumprimento dos prazos estimados.</p>
+                    <p><strong>II. Da CONTRATANTE:</strong> Efetuar os pagamentos nos prazos estipulados, fornecer as condições básicas (água, energia elétrica) e garantir o livre acesso da equipe da CONTRATADA ao local da obra durante o horário de expediente.</p>
+
+                    <h4 style="margin-top: 25px; text-decoration: underline;">CLÁUSULA 4ª - DO FORO</h4>
+                    <p>Para dirimir quaisquer controvérsias oriundas do presente contrato, as partes elegem o foro da comarca de ${config.cidade || 'Caratinga'} - ${config.estado || 'MG'}, renunciando a qualquer outro, por mais privilegiado que seja.</p>
+
+                    <p style="margin-top: 40px; text-align: center;">E, por estarem assim justos e contratados, firmam o presente instrumento em 02 (duas) vias de igual teor.</p>
+
+                    <p style="margin-top: 30px; text-align: right;">${config.cidade || 'Caratinga'} - ${config.estado || 'MG'}, ${dataAtual}.</p>
+
+                    <div style="margin-top: 80px; display: flex; justify-content: space-between;">
+                        <div style="width: 45%; text-align: center; border-top: 1px solid #000; padding-top: 10px;">
+                            <strong>CONTRATADA</strong><br>${config.nomeEmpresa || 'Construtora'}
+                        </div>
+                        <div style="width: 45%; text-align: center; border-top: 1px solid #000; padding-top: 10px;">
+                            <strong>CONTRATANTE</strong><br>${nomeCliente}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const nomeArquivoSafe = nomeCliente.replace(/\s+/g, '_');
+            const codArquivoSafe = codigoOrcamento.replace('/', '-');
+            const nomeArquivo = `Contrato_${nomeArquivoSafe}_${codArquivoSafe}.pdf`;
+
+            const opcoes = {
+                margin:       10,
+                filename:     nomeArquivo,
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opcoes).from(elementoTemp).save();
+        } catch (erro) {
+            console.error("Falha na geração do Contrato PDF:", erro);
+            alert("Erro ao gerar o contrato.");
+        }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Borges ERP | Configurações da Empresa</title>
+  
+  <!-- Ícone Fixo e Seguro (Sem manipulação via JS) -->
+  <link rel="icon" type="image/png" href="./logomarca3d.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { vermelho: "#C62828", concreto: "#37474F", gesso: "#FAFAFA", cta: "#F59E0B" } } } }
+  </script>
+</head>
+<body class="bg-gesso font-sans text-concreto">
+  <main class="max-w-4xl mx-auto p-4 sm:p-8">
+    <div class="flex items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="font-bold text-xl sm:text-2xl text-concreto">Configurações do Sistema</h1>
+        <p class="text-xs sm:text-sm text-concreto/60">Estes dados aparecerão no timbre dos seus orçamentos e contratos.</p>
+      </div>
+      <a href="erp.html" class="px-4 py-2 bg-concreto/10 rounded-lg text-xs sm:text-sm font-bold hover:bg-concreto/20 transition whitespace-nowrap">Voltar</a>
+    </div>
+    <div class="bg-white rounded-2xl border border-concreto/10 shadow-sm p-4 sm:p-8 w-full">
+      <form class="space-y-8">
+        <div>
+          <h2 class="text-sm font-bold text-concreto border-b border-concreto/10 pb-2 mb-4">Identidade Visual</h2>
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <div id="preview-logo" class="w-24 h-24 rounded-xl border-2 border-dashed border-concreto/20 flex flex-col items-center justify-center text-concreto/40 bg-gesso overflow-hidden shrink-0">
+              <i data-lucide="image" class="w-8 h-8 mb-1"></i><span class="text-[10px] font-bold uppercase">Sua Logo</span>
+            </div>
+            <div class="flex-1 w-full text-center sm:text-left">
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Upload da Logomarca</label>
+              <div class="flex flex-col sm:flex-row items-center gap-3">
+                <input type="file" id="uploadLogo" accept="image/png, image/jpeg" class="block w-full text-sm text-concreto/70 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-concreto/5 file:text-concreto hover:file:bg-concreto/10 cursor-pointer">
+              </div>
+              <p class="text-xs text-concreto/50 mt-2">Formatos recomendados: PNG (fundo transparente) ou JPG. Tamanho máximo: 2MB.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-concreto border-b border-concreto/10 pb-2 mb-4">Dados Fiscais e Contato</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Razão Social</label>
+              <input id="nomeEmpresa" type="text" placeholder="Razão Social da Empresa" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-semibold text-concreto">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">CNPJ</label>
+              <input id="cnpj" type="text" placeholder="00.000.000/0000-00" maxlength="18" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">E-mail Comercial</label>
+              <input id="email" type="email" placeholder="contato@empresa.com.br" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">WhatsApp / Celular</label>
+              <input id="celular" type="text" placeholder="(00) 00000-0000" maxlength="15" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">BDI Padrão (%)</label>
+              <input id="bdiPadrao" type="text" placeholder="15,00" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-concreto border-b border-concreto/10 pb-2 mb-4">Endereço da Sede</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">CEP</label>
+              <input id="cep" type="text" placeholder="00000-000" maxlength="9" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Rua / Avenida e Número</label>
+              <input id="endereco" type="text" placeholder="Sua rua, número e bairro" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Cidade</label>
+              <input id="cidade" type="text" placeholder="Nome da Cidade" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-semibold text-concreto">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Estado</label>
+              <input id="estado" type="text" placeholder="UF" maxlength="2" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-semibold text-concreto uppercase">
+            </div>
+          </div>
+        </div>
+        <div class="pt-6 border-t border-concreto/10 flex justify-end">
+          <button type="submit" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold bg-vermelho text-white hover:bg-vermelho/90 transition flex items-center justify-center gap-2 shadow-sm">
+            <i data-lucide="save" class="w-5 h-5"></i> Salvar Configurações
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script>
+    lucide.createIcons();
+    let logoBase64Atual = ''; 
+    const mascaraCNPJ = (valor) => valor.replace(/\D/g, "").replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2").substring(0, 18);
+    const mascaraCelular = (valor) => valor.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2").substring(0, 15);
+    const mascaraCEP = (valor) => valor.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2").substring(0, 9);
+    const mascaraEstado = (valor) => valor.replace(/[^a-zA-Z]/g, "").toUpperCase().substring(0, 2);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!localStorage.getItem('borges_token')) return window.location.href = 'login.html';
+        carregarConfiguracoes(); 
+        configurarFormulario(); 
+        configurarUpload();
+        
+        document.getElementById('cnpj').addEventListener('input', (e) => e.target.value = mascaraCNPJ(e.target.value));
+        document.getElementById('celular').addEventListener('input', (e) => e.target.value = mascaraCelular(e.target.value));
+        document.getElementById('cep').addEventListener('input', (e) => e.target.value = mascaraCEP(e.target.value));
+        document.getElementById('estado').addEventListener('input', (e) => e.target.value = mascaraEstado(e.target.value));
+    });
+
+    let tempoInativo;
+    function resetarTempoInatividade() {
+        clearTimeout(tempoInativo);
+        tempoInativo = setTimeout(() => { alert("Sessão expirada."); localStorage.setItem('borges_rota_pendente', 'configuracoes.html'); localStorage.removeItem('borges_token'); window.location.href = 'login.html'; }, 600000); 
+    }
+    window.onload = window.onmousemove = window.onkeypress = resetarTempoInatividade;
+
+    function configurarUpload() {
+        document.getElementById('uploadLogo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    logoBase64Atual = event.target.result;
+                    document.getElementById('preview-logo').innerHTML = `<img src="${logoBase64Atual}" class="w-full h-full object-contain">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    async function carregarConfiguracoes() {
+        try {
+            const resposta = await fetch('http://localhost:8080/api/configuracoes', { headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } });
+            if (resposta.status === 401 || resposta.status === 403) return window.location.href = 'login.html';
+            
+            if (resposta.ok) {
+                const config = await resposta.json();
+                document.getElementById('nomeEmpresa').value = config.nomeEmpresa || '';
+                document.getElementById('cnpj').value = config.cnpj || '';
+                document.getElementById('email').value = config.email || '';
+                document.getElementById('celular').value = config.celular || '';
+                document.getElementById('cep').value = config.cep || '';
+                document.getElementById('endereco').value = config.endereco || '';
+                document.getElementById('cidade').value = config.cidade || '';
+                document.getElementById('estado').value = config.estado || '';
+                document.getElementById('bdiPadrao').value = config.bdiPadrao ? config.bdiPadrao.toFixed(2).replace('.', ',') : '0,00';
+                
+                if (config.logoBase64) {
+                    logoBase64Atual = config.logoBase64;
+                    document.getElementById('preview-logo').innerHTML = `<img src="${logoBase64Atual}" class="w-full h-full object-contain">`;
+                    // A LÓGICA DE MANIPULAÇÃO DE FAVICON FOI REMOVIDA DAQUI
+                }
+            }
+        } catch (erro) { console.error("Falha ao carregar:", erro); }
+    }
+
+    function configurarFormulario() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async (evento) => {
+            evento.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const textoOriginal = btn.innerHTML; 
+            btn.innerHTML = "Salvando..."; 
+            btn.disabled = true;
+            
+            const payload = {
+                nomeEmpresa: document.getElementById('nomeEmpresa').value, 
+                cnpj: document.getElementById('cnpj').value,
+                email: document.getElementById('email').value, 
+                celular: document.getElementById('celular').value,
+                cep: document.getElementById('cep').value, 
+                endereco: document.getElementById('endereco').value,
+                cidade: document.getElementById('cidade').value, 
+                estado: document.getElementById('estado').value,
+                bdiPadrao: parseFloat(document.getElementById('bdiPadrao').value.replace(',', '.')), 
+                logoBase64: logoBase64Atual 
+            };
+            
+            try {
+                const resposta = await fetch('http://localhost:8080/api/configuracoes', { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                if (resposta.ok) { 
+                    alert("Salvo com sucesso!"); 
+                    window.location.href = "erp.html"; 
+                } else { 
+                    alert("Erro ao salvar."); 
+                }
+            } catch (erro) {} finally { 
+                btn.innerHTML = textoOriginal; 
+                btn.disabled = false; 
+            }
+        });
+    }
+  </script>
+</body>
+</html>

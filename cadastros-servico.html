@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Borges ERP | Catálogo de Serviços</title>
+  
+  <link id="favicon" rel="icon" type="image/png" href="./logomarca3d.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { vermelho: "#AF2C2C", concreto: "#37474F", gesso: "#FAFAFA", cta: "#F59E0B" } } }
+    }
+  </script>
+</head>
+
+<body class="bg-gesso font-sans text-concreto">
+  
+  <main class="max-w-6xl mx-auto p-4 sm:p-8">
+    <div class="flex items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="font-bold text-xl sm:text-2xl text-concreto">Catálogo de Serviços</h1>
+        <p class="text-xs sm:text-sm text-concreto/60">Gestão de mão de obra e precificação de serviços.</p>
+      </div>
+      <a href="erp.html" class="px-4 py-2 bg-concreto/10 rounded-lg text-xs sm:text-sm font-bold hover:bg-concreto/20 transition whitespace-nowrap">Voltar</a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-concreto/10 shadow-sm p-4 sm:p-8 mb-8 relative">
+      <h2 id="tituloFormulario" class="font-bold text-lg text-concreto mb-6 border-b border-concreto/10 pb-2">Novo Serviço</h2>
+      
+      <form id="formServico" class="space-y-6">
+        <input type="hidden" id="servicoId">
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Descrição do Serviço *</label>
+            <input type="text" id="descricao" required placeholder="Ex: Pintura m², Assentamento de Porcelanato, Diária Pedreiro" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-semibold">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Valor de Custo (R$) *</label>
+            <input type="text" id="valorCusto" required placeholder="0,00" oninput="aplicarMascaraMoeda(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-mono">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Valor de Venda (R$) *</label>
+            <input type="text" id="valorVenda" required placeholder="0,00" oninput="aplicarMascaraMoeda(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-cta font-mono text-cta font-bold">
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-end gap-4 pt-4 border-t border-concreto/10">
+          <button type="button" onclick="cancelarEdicao()" id="btnCancelar" class="hidden w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-concreto/10 text-concreto hover:bg-concreto/20 transition">
+            Cancelar Edição
+          </button>
+          <button type="submit" id="btnSalvar" class="w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-vermelho text-white hover:bg-vermelho/90 transition shadow-md flex items-center justify-center gap-2">
+            <i data-lucide="save" class="w-5 h-5"></i> Salvar Serviço no Banco
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-concreto/10 shadow-sm overflow-hidden w-full">
+      <div class="p-4 border-b border-concreto/10 bg-gesso/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h3 class="font-bold text-concreto text-sm">Serviços Cadastrados</h3>
+        <div class="w-full sm:w-auto flex gap-2">
+            <input type="text" id="buscaServico" placeholder="Pesquisar..." class="w-full sm:w-auto bg-white border border-concreto/20 rounded-lg px-3 py-2 text-sm outline-none focus:border-vermelho">
+        </div>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left text-sm min-w-[600px]">
+          <thead class="bg-gesso text-concreto/70 uppercase text-[10px] font-bold border-b border-concreto/10">
+            <tr>
+              <th class="p-4">Descrição</th>
+              <th class="p-4 text-right">Custo Un.</th>
+              <th class="p-4 text-right">Venda Un.</th>
+              <th class="p-4 text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaServicos" class="divide-y divide-concreto/5">
+            <!-- Linhas renderizadas via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let servicosGlobais = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('borges_token');
+        if (!token) {
+            window.location.href = 'login.html';
+            return;
+        }
+        carregarServicos();
+        aplicarLogoGlobal();
+    });
+
+    async function aplicarLogoGlobal() {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch('http://localhost:8080/api/configuracoes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (resposta.ok) {
+                const config = await resposta.json();
+                if (config.logoBase64) {
+                    // Atualiza Sidebar (se existir na página)
+                    const logoSidebar = document.getElementById('sidebarLogo');
+                    if (logoSidebar) logoSidebar.src = config.logoBase64;
+                    
+                    // Atualiza Avatar do Admin (se existir na página)
+                    const adminCircle = document.getElementById('adminAvatar');
+                    if (adminCircle) {
+                        adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
+                        adminCircle.classList.remove('bg-vermelho/10'); 
+                        adminCircle.classList.add('bg-white', 'shadow-sm', 'border', 'border-concreto/10');
+                    }
+                }
+            }
+        } catch (erro) {
+            console.log("Erro ao carregar logo do banco:", erro);
+        }
+    }
+
+    function aplicarMascaraMoeda(input) {
+        let valor = input.value.replace(/\D/g, ''); 
+        if (valor === '') valor = '0';
+        valor = (parseInt(valor) / 100).toFixed(2); 
+        input.value = valor.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function desformatarParaCalculo(valorString) {
+        if (!valorString) return 0;
+        return parseFloat(valorString.toString().replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    function formatarValorParaTela(valorFloat) {
+        if (valorFloat == null) return "0,00";
+        return parseFloat(valorFloat).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    let tempoInativo;
+    function resetarTempoInatividade() {
+        clearTimeout(tempoInativo);
+        tempoInativo = setTimeout(() => {
+            alert("Sessão expirada por inatividade.");
+            localStorage.setItem('borges_rota_pendente', 'cadastros-servico.html');
+            localStorage.removeItem('borges_token');
+            window.location.href = 'login.html';
+        }, 600000); 
+    }
+    window.onload = resetarTempoInatividade;
+    document.onmousemove = resetarTempoInatividade;
+    document.onkeypress = resetarTempoInatividade;
+
+    function verificarAutenticacao(status) {
+        if (status === 401 || status === 403) {
+            localStorage.setItem('borges_rota_pendente', 'cadastros-servico.html');
+            localStorage.removeItem('borges_token');
+            window.location.href = 'login.html';
+            return false;
+        }
+        return true;
+    }
+
+    async function carregarServicos() {
+        try {
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch('http://localhost:8080/api/servicos', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!verificarAutenticacao(resposta.status)) return;
+            servicosGlobais = await resposta.json();
+            renderizarTabela(servicosGlobais);
+        } catch (erro) {}
+    }
+
+    document.getElementById('buscaServico').addEventListener('input', (e) => {
+        const termo = e.target.value.toLowerCase();
+        const filtrados = servicosGlobais.filter(s => s.descricao.toLowerCase().includes(termo));
+        renderizarTabela(filtrados);
+    });
+
+    function renderizarTabela(lista) {
+        const tbody = document.getElementById('tabelaServicos');
+        tbody.innerHTML = '';
+
+        if (lista.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-concreto/50">Nenhum serviço encontrado no banco.</td></tr>`;
+            return;
+        }
+
+        lista.forEach(ser => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-concreto/5 transition";
+            tr.innerHTML = `
+                <td class="p-4 font-semibold text-concreto">${ser.descricao}</td>
+                <td class="p-4 text-right text-concreto/80">R$ ${formatarValorParaTela(ser.valorCusto)}</td>
+                <td class="p-4 text-right font-bold text-cta">R$ ${formatarValorParaTela(ser.valorVenda)}</td>
+                <td class="p-4 text-center space-x-2">
+                    <button onclick="editarServico(${ser.id})" class="p-2 text-concreto/50 hover:text-cta transition bg-white rounded-lg border border-concreto/10 shadow-sm" title="Editar">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="excluirServico(${ser.id})" class="p-2 text-concreto/50 hover:text-vermelho transition bg-white rounded-lg border border-concreto/10 shadow-sm" title="Excluir">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        lucide.createIcons();
+    }
+
+    document.getElementById('formServico').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const id = document.getElementById('servicoId').value;
+        const btnSalvar = document.getElementById('btnSalvar');
+        const textoOriginal = btnSalvar.innerHTML;
+        
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = "Gravando...";
+
+        try {
+            const payload = {
+                descricao: document.getElementById('descricao').value,
+                valorCusto: desformatarParaCalculo(document.getElementById('valorCusto').value),
+                valorVenda: desformatarParaCalculo(document.getElementById('valorVenda').value)
+            };
+
+            const url = id ? `http://localhost:8080/api/servicos/${id}` : 'http://localhost:8080/api/servicos';
+            const method = id ? 'PUT' : 'POST';
+
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch(url, {
+                method: method,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!verificarAutenticacao(resposta.status)) return;
+
+            if (resposta.ok) {
+                alert(id ? "Serviço atualizado com sucesso!" : "Serviço cadastrado com sucesso!");
+                cancelarEdicao();
+                carregarServicos();
+            } else {
+                alert("Erro ao gravar! Verifique se você reiniciou o servidor Java.");
+                btnSalvar.innerHTML = textoOriginal;
+            }
+        } catch (erro) {
+            alert("Erro de conexão! O servidor Spring Boot está rodando?");
+            btnSalvar.innerHTML = textoOriginal;
+        } finally {
+            btnSalvar.disabled = false;
+        }
+    });
+
+    function editarServico(id) {
+        const ser = servicosGlobais.find(s => s.id === id);
+        if (!ser) return;
+
+        document.getElementById('servicoId').value = ser.id;
+        document.getElementById('descricao').value = ser.descricao || '';
+        document.getElementById('valorCusto').value = formatarValorParaTela(ser.valorCusto);
+        document.getElementById('valorVenda').value = formatarValorParaTela(ser.valorVenda);
+
+        document.getElementById('tituloFormulario').innerText = "Editando Serviço";
+        document.getElementById('btnSalvar').innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i> Atualizar Serviço`;
+        document.getElementById('btnSalvar').classList.replace('bg-vermelho', 'bg-cta');
+        document.getElementById('btnSalvar').classList.replace('hover:bg-vermelho/90', 'hover:bg-cta/90');
+        document.getElementById('btnCancelar').classList.remove('hidden');
+        
+        lucide.createIcons();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicao() {
+        document.getElementById('formServico').reset();
+        document.getElementById('servicoId').value = '';
+        
+        document.getElementById('tituloFormulario').innerText = "Novo Serviço";
+        document.getElementById('btnSalvar').innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Salvar Serviço no Banco`;
+        document.getElementById('btnSalvar').classList.replace('bg-cta', 'bg-vermelho');
+        document.getElementById('btnSalvar').classList.replace('hover:bg-cta/90', 'hover:bg-vermelho/90');
+        document.getElementById('btnCancelar').classList.add('hidden');
+        
+        lucide.createIcons();
+    }
+
+    async function excluirServico(id) {
+        if (!confirm("Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita.")) return;
+
+        try {
+            const token = localStorage.getItem('borges_token');
+            const resposta = await fetch(`http://localhost:8080/api/servicos/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!verificarAutenticacao(resposta.status)) return;
+
+            if (resposta.ok || resposta.status === 204) {
+                carregarServicos();
+            } else {
+                alert("Não foi possível excluir. O item pode estar vinculado a um orçamento existente.");
+            }
+        } catch (erro) {}
+    }
+  </script>
+</body>
+</html>
