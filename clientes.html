@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,6 +12,7 @@
     tailwind.config = { theme: { extend: { colors: { vermelho: "#AF2C2C", concreto: "#37474F", gesso: "#FAFAFA", cta: "#F59E0B" } } } }
   </script>
 </head>
+
 <body class="bg-gesso font-sans text-concreto">
   <main class="max-w-6xl mx-auto p-4 sm:p-8">
     <div class="flex items-center justify-between mb-8 gap-4">
@@ -18,59 +20,121 @@
         <h1 class="font-bold text-xl sm:text-2xl text-concreto">Gestão de Clientes</h1>
         <p class="text-xs sm:text-sm text-concreto/60">Cadastre, edite e gerencie sua carteira de clientes.</p>
       </div>
-      <a href="erp.html" class="px-4 py-2 bg-concreto/10 rounded-lg text-xs sm:text-sm font-bold hover:bg-concreto/20 transition whitespace-nowrap">Voltar</a>
+      <a href="erp.html"
+        class="px-4 py-2 bg-concreto/10 rounded-lg text-xs sm:text-sm font-bold hover:bg-concreto/20 transition whitespace-nowrap">Voltar</a>
     </div>
 
     <div class="bg-white rounded-2xl border border-concreto/10 shadow-sm p-4 sm:p-8 mb-8 relative">
-      <h2 id="tituloFormulario" class="font-bold text-lg text-concreto mb-6 border-b border-concreto/10 pb-2">Novo Cadastro</h2>
+      <h2 id="tituloFormulario" class="font-bold text-lg text-concreto mb-6 border-b border-concreto/10 pb-2">Novo
+        Cadastro</h2>
       <form id="formCliente" class="space-y-6">
         <input type="hidden" id="clienteId">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
             <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Tipo de Pessoa *</label>
-            <select id="tipoPessoa" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"><option value="PF">Pessoa Física (PF)</option><option value="PJ">Pessoa Jurídica (PJ)</option></select>
+            <select id="tipoPessoa" required
+              class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+              <option value="PF">Pessoa Física (PF)</option>
+              <option value="PJ">Pessoa Jurídica (PJ)</option>
+            </select>
           </div>
           <div class="md:col-span-2">
             <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Nome ou Razão Social *</label>
-            <input type="text" id="nomeRazaoSocial" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            <input type="text" id="nomeRazaoSocial" required
+              class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">CPF / CNPJ *</label>
-            <input type="text" id="documento" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            <input type="text" id="documento" required
+              class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Contato *</label><input type="text" id="contato" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
-          <div class="md:col-span-2"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">E-mail</label><input type="email" id="email" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
+          <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Contato *</label><input
+              type="text" id="contato" required
+              class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+          </div>
+          <div class="md:col-span-2"><label
+              class="block text-xs font-bold uppercase text-concreto/60 mb-2">E-mail</label><input type="email"
+              id="email"
+              class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+          </div>
         </div>
         <div class="pt-4 border-t border-concreto/10">
           <h3 class="text-xs font-bold uppercase text-concreto/60 mb-4">Endereço</h3>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">CEP</label><input type="text" id="cep" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
-            <div class="md:col-span-2"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Rua / Avenida</label><input type="text" id="rua" oninput="somenteLetras(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
-            <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Número</label><input type="text" id="numero" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
-            <div class="md:col-span-2"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Complemento</label><input type="text" id="complemento" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
-            <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Bairro</label><input type="text" id="bairro" oninput="somenteLetras(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
-            <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Cidade</label><input type="text" id="cidade" oninput="somenteLetras(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho"></div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">CEP</label>
+              <input type="text" id="cep"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Rua / Avenida</label>
+              <input type="text" id="rua" oninput="somenteLetras(this)"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Número</label>
+              <input type="text" id="numero"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+
+            <!-- Segunda linha do endereço ajustada para caber o Estado -->
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Complemento</label>
+              <input type="text" id="complemento"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Bairro</label>
+              <input type="text" id="bairro" oninput="somenteLetras(this)"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Cidade</label>
+              <input type="text" id="cidade" oninput="somenteLetras(this)"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Estado</label>
+              <input type="text" id="estado" maxlength="2" placeholder="UF"
+                class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho uppercase font-semibold text-concreto">
+            </div>
           </div>
         </div>
         <div class="flex flex-col sm:flex-row justify-end gap-4 pt-4">
-          <button type="button" onclick="cancelarEdicao()" id="btnCancelar" class="hidden w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-concreto/10 text-concreto hover:bg-concreto/20 transition">Cancelar Edição</button>
-          <button type="submit" id="btnSalvar" class="w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-vermelho text-white hover:bg-vermelho/90 transition shadow-md flex items-center justify-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Cadastrar Cliente</button>
+          <button type="button" onclick="cancelarEdicao()" id="btnCancelar"
+            class="hidden w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-concreto/10 text-concreto hover:bg-concreto/20 transition">Cancelar
+            Edição</button>
+          <button type="submit" id="btnSalvar"
+            class="w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-vermelho text-white hover:bg-vermelho/90 transition shadow-md flex items-center justify-center gap-2"><i
+              data-lucide="save" class="w-5 h-5"></i> Cadastrar Cliente</button>
         </div>
       </form>
     </div>
 
     <div class="bg-white rounded-2xl border border-concreto/10 shadow-sm overflow-hidden w-full">
       <div class="flex flex-col sm:flex-row border-b border-concreto/10 bg-gesso/50">
-        <button onclick="aplicarFiltro('TODOS')" id="aba-TODOS" class="flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-vermelho text-vermelho transition text-left sm:text-center pl-4 sm:pl-0">Todos os Clientes</button>
-        <button onclick="aplicarFiltro('PF')" id="aba-PF" class="flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-transparent text-concreto/60 hover:text-concreto transition text-left sm:text-center pl-4 sm:pl-0">Pessoa Física (PF)</button>
-        <button onclick="aplicarFiltro('PJ')" id="aba-PJ" class="flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-transparent text-concreto/60 hover:text-concreto transition text-left sm:text-center pl-4 sm:pl-0">Pessoa Jurídica (PJ)</button>
+        <button onclick="aplicarFiltro('TODOS')" id="aba-TODOS"
+          class="flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-vermelho text-vermelho transition text-left sm:text-center pl-4 sm:pl-0">Todos
+          os Clientes</button>
+        <button onclick="aplicarFiltro('PF')" id="aba-PF"
+          class="flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-transparent text-concreto/60 hover:text-concreto transition text-left sm:text-center pl-4 sm:pl-0">Pessoa
+          Física (PF)</button>
+        <button onclick="aplicarFiltro('PJ')" id="aba-PJ"
+          class="flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-transparent text-concreto/60 hover:text-concreto transition text-left sm:text-center pl-4 sm:pl-0">Pessoa
+          Jurídica (PJ)</button>
       </div>
       <div class="overflow-x-auto w-full">
         <table class="w-full text-left text-sm min-w-[700px]">
           <thead class="bg-gesso text-concreto/70 uppercase text-[10px] font-bold border-b border-concreto/10">
-            <tr><th class="p-4">Nome / Razão Social</th><th class="p-4">Documento</th><th class="p-4">Contato</th><th class="p-4">Cidade</th><th class="p-4 text-center">Ações</th></tr>
+            <tr>
+              <th class="p-4">Nome / Razão Social</th>
+              <th class="p-4">Documento</th>
+              <th class="p-4">Contato</th>
+              <th class="p-4">Cidade</th>
+              <th class="p-4 text-center">Ações</th>
+            </tr>
           </thead>
           <tbody id="tabelaClientes" class="divide-y divide-concreto/5"></tbody>
         </table>
@@ -83,106 +147,107 @@
     let clientesGlobais = []; let filtroAtual = 'TODOS';
 
     document.addEventListener('DOMContentLoaded', () => {
-        if (!localStorage.getItem('borges_token')) return window.location.href = 'login.html';
-        carregarClientes(); configurarMascaras(); aplicarLogoGlobal();
+      if (!localStorage.getItem('borges_token')) return window.location.href = 'login.html';
+      carregarClientes(); configurarMascaras(); aplicarLogoGlobal();
     });
 
     async function aplicarLogoGlobal() {
-        try {
-            const token = localStorage.getItem('borges_token');
-            const resposta = await fetch('https://borges-erp.onrender.com/api/configuracoes', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (resposta.ok) {
-                const config = await resposta.json();
-                if (config.logoBase64) {
-                    const logoSidebar = document.getElementById('sidebarLogo');
-                    if (logoSidebar) logoSidebar.src = config.logoBase64;
-                    const adminCircle = document.getElementById('adminAvatar');
-                    if (adminCircle) {
-                        adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
-                        adminCircle.classList.remove('bg-vermelho/10'); 
-                        adminCircle.classList.add('bg-white', 'shadow-sm', 'border', 'border-concreto/10');
-                    }
-                }
+      try {
+        const token = localStorage.getItem('borges_token');
+        const resposta = await fetch('https://borges-erp.onrender.com/api/configuracoes', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (resposta.ok) {
+          const config = await resposta.json();
+          if (config.logoBase64) {
+            const logoSidebar = document.getElementById('sidebarLogo');
+            if (logoSidebar) logoSidebar.src = config.logoBase64;
+            const adminCircle = document.getElementById('adminAvatar');
+            if (adminCircle) {
+              adminCircle.innerHTML = `<img src="${config.logoBase64}" class="w-full h-full rounded-full object-contain p-1">`;
+              adminCircle.classList.remove('bg-vermelho/10');
+              adminCircle.classList.add('bg-white', 'shadow-sm', 'border', 'border-concreto/10');
             }
-        } catch (erro) {
-            console.log("Erro ao carregar logo do banco:", erro);
+          }
         }
+      } catch (erro) {
+        console.log("Erro ao carregar logo do banco:", erro);
+      }
     }
 
     function configurarMascaras() {
-        document.getElementById('contato').addEventListener('input', (e) => e.target.value = e.target.value.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2").substring(0, 15));
-        document.getElementById('cep').addEventListener('input', (e) => e.target.value = e.target.value.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2").substring(0, 9));
-        document.getElementById('documento').addEventListener('input', (e) => {
-            let v = e.target.value.replace(/\D/g, "");
-            if (document.getElementById('tipoPessoa').value === 'PF') v = v.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2").substring(0, 14);
-            else v = v.replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2").substring(0, 18);
-            e.target.value = v;
-        });
-        document.getElementById('tipoPessoa').addEventListener('change', () => document.getElementById('documento').value = '');
+      document.getElementById('contato').addEventListener('input', (e) => e.target.value = e.target.value.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2").substring(0, 15));
+      document.getElementById('cep').addEventListener('input', (e) => e.target.value = e.target.value.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2").substring(0, 9));
+      document.getElementById('documento').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, "");
+        if (document.getElementById('tipoPessoa').value === 'PF') v = v.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2").substring(0, 14);
+        else v = v.replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2").substring(0, 18);
+        e.target.value = v;
+      });
+      document.getElementById('tipoPessoa').addEventListener('change', () => document.getElementById('documento').value = '');
     }
     function somenteLetras(input) { input.value = input.value.replace(/[0-9]/g, ''); }
 
     let tempoInativo;
     function resetarTempoInatividade() {
-        clearTimeout(tempoInativo);
-        tempoInativo = setTimeout(() => { alert("Sessão expirada."); localStorage.setItem('borges_rota_pendente', 'clientes.html'); localStorage.removeItem('borges_token'); window.location.href = 'login.html'; }, 600000); 
+      clearTimeout(tempoInativo);
+      tempoInativo = setTimeout(() => { alert("Sessão expirada."); localStorage.setItem('borges_rota_pendente', 'clientes.html'); localStorage.removeItem('borges_token'); window.location.href = 'login.html'; }, 600000);
     }
     window.onload = window.onmousemove = window.onkeypress = resetarTempoInatividade;
 
     async function carregarClientes() {
-        try {
-            const resposta = await fetch('https://borges-erp.onrender.com/api/clientes', { headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } });
-            if (resposta.status === 401 || resposta.status === 403) return window.location.href = 'login.html';
-            clientesGlobais = await resposta.json(); renderizarTabela();
-        } catch (erro) {}
+      try {
+        const resposta = await fetch('https://borges-erp.onrender.com/api/clientes', { headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } });
+        if (resposta.status === 401 || resposta.status === 403) return window.location.href = 'login.html';
+        clientesGlobais = await resposta.json(); renderizarTabela();
+      } catch (erro) { }
     }
 
     function aplicarFiltro(tipo) {
-        filtroAtual = tipo;
-        ['TODOS', 'PF', 'PJ'].forEach(aba => {
-            document.getElementById(`aba-${aba}`).className = aba === tipo ? "flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-vermelho text-vermelho transition text-left sm:text-center pl-4 sm:pl-0" : "flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-transparent text-concreto/60 hover:text-concreto transition text-left sm:text-center pl-4 sm:pl-0";
-        });
-        renderizarTabela();
+      filtroAtual = tipo;
+      ['TODOS', 'PF', 'PJ'].forEach(aba => {
+        document.getElementById(`aba-${aba}`).className = aba === tipo ? "flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-vermelho text-vermelho transition text-left sm:text-center pl-4 sm:pl-0" : "flex-1 py-4 text-sm font-bold border-l-4 sm:border-l-0 sm:border-b-2 border-transparent text-concreto/60 hover:text-concreto transition text-left sm:text-center pl-4 sm:pl-0";
+      });
+      renderizarTabela();
     }
 
     function renderizarTabela() {
-        const tbody = document.getElementById('tabelaClientes'); tbody.innerHTML = '';
-        const filtrados = clientesGlobais.filter(c => filtroAtual === 'TODOS' || c.tipoPessoa === filtroAtual);
-        if (filtrados.length === 0) return tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-concreto/50">Nenhum cliente.</td></tr>`;
-        filtrados.forEach(c => {
-            const tr = document.createElement('tr'); tr.className = "hover:bg-concreto/5 transition";
-            tr.innerHTML = `<td class="p-4 font-semibold text-concreto">${c.nomeRazaoSocial}<div class="text-[10px] font-normal text-concreto/50 uppercase">${c.tipoPessoa}</div></td><td class="p-4 text-concreto/80">${c.documento}</td><td class="p-4 text-concreto/80">${c.contato}</td><td class="p-4 text-concreto/80">${c.cidade || '-'}</td><td class="p-4 text-center space-x-2"><button onclick="editarCliente(${c.id})" class="p-2 text-concreto/50 hover:text-cta bg-white rounded-lg border shadow-sm"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="excluirCliente(${c.id})" class="p-2 text-concreto/50 hover:text-vermelho bg-white rounded-lg border shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
-            tbody.appendChild(tr);
-        }); lucide.createIcons();
+      const tbody = document.getElementById('tabelaClientes'); tbody.innerHTML = '';
+      const filtrados = clientesGlobais.filter(c => filtroAtual === 'TODOS' || c.tipoPessoa === filtroAtual);
+      if (filtrados.length === 0) return tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-concreto/50">Nenhum cliente.</td></tr>`;
+      filtrados.forEach(c => {
+        const tr = document.createElement('tr'); tr.className = "hover:bg-concreto/5 transition";
+        tr.innerHTML = `<td class="p-4 font-semibold text-concreto">${c.nomeRazaoSocial}<div class="text-[10px] font-normal text-concreto/50 uppercase">${c.tipoPessoa}</div></td><td class="p-4 text-concreto/80">${c.documento}</td><td class="p-4 text-concreto/80">${c.contato}</td><td class="p-4 text-concreto/80">${c.cidade || '-'}</td><td class="p-4 text-center space-x-2"><button onclick="editarCliente(${c.id})" class="p-2 text-concreto/50 hover:text-cta bg-white rounded-lg border shadow-sm"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="excluirCliente(${c.id})" class="p-2 text-concreto/50 hover:text-vermelho bg-white rounded-lg border shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
+        tbody.appendChild(tr);
+      }); lucide.createIcons();
     }
 
     document.getElementById('formCliente').addEventListener('submit', async (e) => {
-        e.preventDefault(); const id = document.getElementById('clienteId').value, btn = document.getElementById('btnSalvar');
-        btn.disabled = true; btn.innerHTML = "Salvando...";
-        const payload = { tipoPessoa: document.getElementById('tipoPessoa').value, nomeRazaoSocial: document.getElementById('nomeRazaoSocial').value, documento: document.getElementById('documento').value, contato: document.getElementById('contato').value, email: document.getElementById('email').value, cep: document.getElementById('cep').value, rua: document.getElementById('rua').value, numero: document.getElementById('numero').value, complemento: document.getElementById('complemento').value, bairro: document.getElementById('bairro').value, cidade: document.getElementById('cidade').value, estado: document.getElementById('estado').value };
-        const url = id ? `https://borges-erp.onrender.com/api/clientes/${id}` : 'https://borges-erp.onrender.com/api/clientes';
-        try {
-            const res = await fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) });
-            if (res.ok) { alert("Salvo!"); cancelarEdicao(); carregarClientes(); } else alert("Erro. Verifique duplicidade.");
-        } catch (erro) {} finally { btn.disabled = false; }
+      e.preventDefault(); const id = document.getElementById('clienteId').value, btn = document.getElementById('btnSalvar');
+      btn.disabled = true; btn.innerHTML = "Salvando...";
+      const payload = { tipoPessoa: document.getElementById('tipoPessoa').value, nomeRazaoSocial: document.getElementById('nomeRazaoSocial').value, documento: document.getElementById('documento').value, contato: document.getElementById('contato').value, email: document.getElementById('email').value, cep: document.getElementById('cep').value, rua: document.getElementById('rua').value, numero: document.getElementById('numero').value, complemento: document.getElementById('complemento').value, bairro: document.getElementById('bairro').value, cidade: document.getElementById('cidade').value, estado: document.getElementById('estado').value };
+      const url = id ? `https://borges-erp.onrender.com/api/clientes/${id}` : 'https://borges-erp.onrender.com/api/clientes';
+      try {
+        const res = await fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) });
+        if (res.ok) { alert("Salvo!"); cancelarEdicao(); carregarClientes(); } else alert("Erro. Verifique duplicidade.");
+      } catch (erro) { } finally { btn.disabled = false; }
     });
 
     function editarCliente(id) {
-        const c = clientesGlobais.find(c => c.id === id); if (!c) return;
-        document.getElementById('clienteId').value = c.id; document.getElementById('tipoPessoa').value = c.tipoPessoa || 'PF'; document.getElementById('nomeRazaoSocial').value = c.nomeRazaoSocial || ''; document.getElementById('documento').value = c.documento || ''; document.getElementById('contato').value = c.contato || ''; document.getElementById('email').value = c.email || ''; document.getElementById('cep').value = c.cep || ''; document.getElementById('rua').value = c.rua || ''; document.getElementById('numero').value = c.numero || ''; document.getElementById('complemento').value = c.complemento || ''; document.getElementById('bairro').value = c.bairro || ''; document.getElementById('cidade').value = c.cidade || ''; document.getElementById('estado').value = c.estado || '';
-        document.getElementById('tituloFormulario').innerText = "Editando Cliente"; document.getElementById('btnSalvar').innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i> Atualizar Cliente`; document.getElementById('btnSalvar').className = "w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-cta text-white transition shadow-md flex items-center justify-center gap-2"; document.getElementById('btnCancelar').classList.remove('hidden'); lucide.createIcons(); window.scrollTo({ top: 0, behavior: 'smooth' });
+      const c = clientesGlobais.find(c => c.id === id); if (!c) return;
+      document.getElementById('clienteId').value = c.id; document.getElementById('tipoPessoa').value = c.tipoPessoa || 'PF'; document.getElementById('nomeRazaoSocial').value = c.nomeRazaoSocial || ''; document.getElementById('documento').value = c.documento || ''; document.getElementById('contato').value = c.contato || ''; document.getElementById('email').value = c.email || ''; document.getElementById('cep').value = c.cep || ''; document.getElementById('rua').value = c.rua || ''; document.getElementById('numero').value = c.numero || ''; document.getElementById('complemento').value = c.complemento || ''; document.getElementById('bairro').value = c.bairro || ''; document.getElementById('cidade').value = c.cidade || ''; document.getElementById('estado').value = c.estado || '';
+      document.getElementById('tituloFormulario').innerText = "Editando Cliente"; document.getElementById('btnSalvar').innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i> Atualizar Cliente`; document.getElementById('btnSalvar').className = "w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-cta text-white transition shadow-md flex items-center justify-center gap-2"; document.getElementById('btnCancelar').classList.remove('hidden'); lucide.createIcons(); window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function cancelarEdicao() {
-        document.getElementById('formCliente').reset(); document.getElementById('clienteId').value = '';
-        document.getElementById('tituloFormulario').innerText = "Novo Cadastro"; document.getElementById('btnSalvar').innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Cadastrar Cliente`; document.getElementById('btnSalvar').className = "w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-vermelho text-white transition shadow-md flex items-center justify-center gap-2"; document.getElementById('btnCancelar').classList.add('hidden'); lucide.createIcons();
+      document.getElementById('formCliente').reset(); document.getElementById('clienteId').value = '';
+      document.getElementById('tituloFormulario').innerText = "Novo Cadastro"; document.getElementById('btnSalvar').innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Cadastrar Cliente`; document.getElementById('btnSalvar').className = "w-full sm:w-auto px-8 py-3 rounded-xl font-bold bg-vermelho text-white transition shadow-md flex items-center justify-center gap-2"; document.getElementById('btnCancelar').classList.add('hidden'); lucide.createIcons();
     }
     async function excluirCliente(id) {
-        if (!confirm("Excluir cliente definitivamente?")) return;
-        try { const res = await fetch(`https://borges-erp.onrender.com/api/clientes/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } }); if (res.ok || res.status === 204) { alert("Excluído!"); carregarClientes(); } } catch (erro) {}
+      if (!confirm("Excluir cliente definitivamente?")) return;
+      try { const res = await fetch(`https://borges-erp.onrender.com/api/clientes/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } }); if (res.ok || res.status === 204) { alert("Excluído!"); carregarClientes(); } } catch (erro) { }
     }
   </script>
 </body>
+
 </html>
