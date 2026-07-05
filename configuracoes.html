@@ -44,23 +44,23 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-2">
               <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Razão Social</label>
-              <input id="nomeEmpresa" type="text" placeholder="Razão Social da Empresa" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-semibold text-concreto">
+              <input id="nomeEmpresa" type="text" placeholder="Razão Social da Empresa" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho font-semibold text-concreto">
             </div>
             <div>
               <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">CNPJ</label>
-              <input id="cnpj" type="text" placeholder="00.000.000/0000-00" maxlength="18" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+              <input id="cnpj" type="text" placeholder="00.000.000/0000-00" required maxlength="18" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
             </div>
             <div class="md:col-span-2">
               <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">E-mail Comercial</label>
-              <input id="email" type="email" placeholder="contato@empresa.com.br" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+              <input id="email" type="email" placeholder="contato@empresa.com.br" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
             </div>
             <div>
               <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">WhatsApp / Celular</label>
-              <input id="celular" type="text" placeholder="(00) 00000-0000" maxlength="15" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+              <input id="celular" type="text" placeholder="(00) 00000-0000" required maxlength="15" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
             </div>
             <div>
               <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">BDI Padrão (%)</label>
-              <input id="bdiPadrao" type="text" placeholder="15,00" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
+              <input id="bdiPadrao" type="text" placeholder="15,00" required class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho">
             </div>
           </div>
         </div>
@@ -168,6 +168,10 @@
             btn.innerHTML = "Salvando..."; 
             btn.disabled = true;
             
+            // Trava de segurança: Se o BDI estiver vazio, assume 0.0 para não dar NaN
+            let bdiRaw = document.getElementById('bdiPadrao').value;
+            let bdiValor = bdiRaw ? parseFloat(bdiRaw.replace(',', '.')) : 0.0;
+            
             const payload = {
                 nomeEmpresa: document.getElementById('nomeEmpresa').value, 
                 cnpj: document.getElementById('cnpj').value,
@@ -177,7 +181,7 @@
                 endereco: document.getElementById('endereco').value,
                 cidade: document.getElementById('cidade').value, 
                 estado: document.getElementById('estado').value,
-                bdiPadrao: parseFloat(document.getElementById('bdiPadrao').value.replace(',', '.')), 
+                bdiPadrao: bdiValor, 
                 logoBase64: logoBase64Atual 
             };
             
@@ -189,12 +193,15 @@
                 });
                 
                 if (resposta.ok) { 
-                    alert("Salvo com sucesso!"); 
+                    alert("Configurações salvas com sucesso!"); 
                     window.location.href = "erp.html"; 
                 } else { 
-                    alert("Erro ao salvar."); 
+                    alert("Erro ao salvar. Verifique se todos os campos estão preenchidos corretamente."); 
                 }
-            } catch (erro) {} finally { 
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro de conexão com o servidor.");
+            } finally { 
                 btn.innerHTML = textoOriginal; 
                 btn.disabled = false; 
             }
