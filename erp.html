@@ -428,7 +428,9 @@
             if (!verificarAutenticacao(resposta.status)) return;
             
             const dados = await resposta.json();
-            const formatarMoeda = (valor) => `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`;
+            
+            // A CORREÇÃO ESTÁ AQUI: adicionamos "|| 0" para garantir que, se vier vazio do Java, o JavaScript trate como 0.
+            const formatarMoeda = (valor) => `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`;
             
             document.getElementById('dashFaturamento').innerText = formatarMoeda(dados.faturamento);
             document.getElementById('dashCustos').innerText = formatarMoeda(dados.custos);
