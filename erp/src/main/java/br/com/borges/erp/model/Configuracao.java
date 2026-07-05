@@ -30,7 +30,7 @@ public class Configuracao {
     @NotBlank(message = "O número de celular é obrigatório")
     private String celular;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "logo_base64", columnDefinition = "TEXT")
     private String logoBase64;
 
     // ... restante do código segue igual
