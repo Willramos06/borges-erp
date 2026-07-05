@@ -14,9 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://borges-erp.vercel.app") // O link exato do seu Front-end
-                        // Altere a parte do .allowedOrigins para esta:
-                        .allowedOriginPatterns("https://*-will-ramos-projects.vercel.app", "https://borges-erp.vercel.app")
+                        .allowedOrigins("https://borges-erp.vercel.app") 
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
