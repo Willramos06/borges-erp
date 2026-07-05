@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orcamentos")
-@CrossOrigin(origins = "*")
+
 public class OrcamentoController {
 
     @Autowired

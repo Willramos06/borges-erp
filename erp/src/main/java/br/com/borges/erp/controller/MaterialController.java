@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/materiais")
-@CrossOrigin(origins = "*")
+
 public class MaterialController {
 
     @Autowired
