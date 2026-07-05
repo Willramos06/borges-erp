@@ -523,15 +523,20 @@
             const token = localStorage.getItem('borges_token');
             const headers = { 'Authorization': `Bearer ${token}` };
             
-            const [resOrc, resConfig] = await Promise.all([
+            // 1. Buscamos o Orçamento, as Configurações e também os Catálogos de Serviços e Materiais
+            const [resOrc, resConfig, resServicos, resMateriais] = await Promise.all([
                 fetch(`https://borges-erp.onrender.com/api/orcamentos/${id}`, { headers }),
-                fetch('https://borges-erp.onrender.com/api/configuracoes', { headers }).catch(() => null)
+                fetch('https://borges-erp.onrender.com/api/configuracoes', { headers }).catch(() => null),
+                fetch('https://borges-erp.onrender.com/api/servicos', { headers }).catch(() => null),
+                fetch('https://borges-erp.onrender.com/api/materiais', { headers }).catch(() => null)
             ]);
             
             if (!verificarAutenticacao(resOrc.status)) return;
             
             const orc = await resOrc.json();
             const config = resConfig && resConfig.ok ? await resConfig.json() : {}; 
+            const servicos = resServicos && resServicos.ok ? await resServicos.json() : [];
+            const materiais = resMateriais && resMateriais.ok ? await resMateriais.json() : [];
             
             const dataAtual = new Date().toLocaleDateString('pt-BR');
             const numOrc = (orc.codigoVisual || `00000000${orc.id}`).padStart(8, '0');
@@ -540,17 +545,37 @@
             const endCli = orc.cliente ? `${orc.cliente.rua || ''}, ${orc.cliente.numero || ''} ${orc.cliente.complemento ? ' - ' + orc.cliente.complemento : ''} - ${orc.cliente.bairro || ''} - ${orc.cliente.cep || ''} - ${orc.cliente.cidade || ''} - ${orc.cliente.estado || ''}` : '';
             const contatoCli = orc.cliente ? orc.cliente.contato : '';
 
-            const linhasItens = orc.itens && orc.itens.length > 0 ? orc.itens.map((item, i) => `
+            // 2. Mapeamos os itens, traduzindo os IDs para a descrição correta
+            const linhasItens = orc.itens && orc.itens.length > 0 ? orc.itens.map((item, i) => {
+                let descricaoExata = item.descricao || "Item do Orçamento";
+                
+                // Se o Java retornou o objeto aninhado
+                if (item.servico && item.servico.descricao) {
+                    descricaoExata = item.servico.descricao;
+                } else if (item.material && item.material.descricao) {
+                    descricaoExata = item.material.descricao;
+                } 
+                // Se o Java retornou apenas o ID, buscamos nos catálogos que carregamos
+                else if (item.tipoItem === 'MATERIAL' && item.materialId) {
+                    const mat = materiais.find(m => m.id === item.materialId);
+                    if (mat) descricaoExata = mat.descricao;
+                } else if ((item.tipoItem === 'SERVICO' || item.tipoItem === 'SERVICO_MATERIAL') && item.servicoId) {
+                    const serv = servicos.find(s => s.id === item.servicoId);
+                    if (serv) descricaoExata = serv.descricao;
+                }
+
+                return `
                 <tr>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${i + 1}</td>
-                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${item.descricaoVisual || (item.tipoItem === 'SERVICO' ? 'Serviço' : (item.tipoItem === 'MATERIAL' ? 'Material' : 'Item do Orçamento'))}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${descricaoExata}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: center;">${item.unidadeMedida || 'UN'}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.quantidade}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.valorUnitario.toFixed(2).replace('.', ',')}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">0,00</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.valorTotalItem.toFixed(2).replace('.', ',')}</td>
                 </tr>
-            `).join('') : `<tr><td colspan="7" style="padding: 8px; border: 1px solid #ccc; text-align: center;">Nenhum item adicionado</td></tr>`;
+                `;
+            }).join('') : `<tr><td colspan="7" style="padding: 8px; border: 1px solid #ccc; text-align: center;">Nenhum item adicionado</td></tr>`;
 
             const elementoTemp = document.createElement('div');
             elementoTemp.innerHTML = `
