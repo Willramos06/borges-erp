@@ -543,7 +543,7 @@
             const linhasItens = orc.itens && orc.itens.length > 0 ? orc.itens.map((item, i) => `
                 <tr>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${i + 1}</td>
-                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${item.descricaoVisual || item.tipoItem}</td>
+                    <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px;">${item.descricao}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: center;">${item.unidadeMedida || 'UN'}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.quantidade}</td>
                     <td style="padding: 6px; border: 1px solid #ccc; font-size: 11px; text-align: right;">${item.valorUnitario.toFixed(2).replace('.', ',')}</td>
