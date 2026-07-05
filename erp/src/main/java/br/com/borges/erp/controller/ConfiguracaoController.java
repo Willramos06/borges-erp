@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/configuracoes")
-@CrossOrigin(origins = "*")
 public class ConfiguracaoController {
 
     @Autowired
