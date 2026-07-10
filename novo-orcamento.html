@@ -29,7 +29,11 @@
           <h3 class="font-bold text-concreto mb-4">Itens e Serviços</h3>
           <div class="flex flex-col md:flex-row gap-4 mb-6 items-start md:items-end">
             <div class="w-full md:w-1/4"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Tipo</label><select id="tipoItem" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none"><option value="SERVICO">Mão de Obra</option><option value="MATERIAL">Material</option><option value="SERVICO_MATERIAL">Mão de Obra c/ Mat.</option></select></div>
-            <div class="flex-1 w-full"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Item</label><select id="itemId" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none"><option value="">Selecione...</option></select></div>
+           <div class="flex-1 w-full">
+            <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Buscar Item</label>
+            <input type="text" id="itemBusca" list="listaItens" placeholder="Digite para pesquisar..." class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none focus:border-vermelho">
+            <datalist id="listaItens"></datalist>
+          </div>
             <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
               <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Unid.</label><input id="unidadeMedida" type="text" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none uppercase text-center"></div>
               <div><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Qtd.</label><input id="quantidade" type="text" oninput="aplicarMascaraNumero(this)" placeholder="1,00" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-2.5 outline-none text-center"></div>
@@ -49,6 +53,10 @@
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 pt-6 border-t border-concreto/10">
           <div class="w-full sm:w-1/4"><label class="block text-xs font-bold uppercase text-concreto/60 mb-2">BDI (%)</label><input id="bdiPercentual" type="text" oninput="aplicarMascaraNumero(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho" value="0,00"></div>
+          <div class="w-full sm:w-1/4">
+            <label class="block text-xs font-bold uppercase text-concreto/60 mb-2">Desconto (R$)</label>
+            <input id="valorDesconto" type="text" oninput="aplicarMascaraMoeda(this)" class="w-full bg-gesso border border-concreto/20 rounded-xl px-4 py-3 outline-none focus:border-vermelho" value="0,00">
+          </div>
           <div class="w-full sm:w-auto text-right bg-gesso p-4 rounded-xl border border-concreto/10"><p class="text-sm text-concreto/60">Subtotal Bruto</p><p id="valorSubtotalTela" class="font-bold text-concreto font-mono text-xl sm:text-2xl mt-1">R$ 0,00</p></div>
         </div>
         <div class="pt-6"><button type="submit" class="w-full py-4 rounded-xl font-bold bg-vermelho text-white flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento</button></div>
@@ -110,7 +118,15 @@
     }
 
     function preencherDropdown(id, lista, vp, tp) { const sel = document.getElementById(id); sel.innerHTML = '<option value="">Selecione...</option>'; lista.forEach(i => sel.innerHTML += `<option value="${i[vp]}">${i[tp]}</option>`); }
-    function atualizarDropdownItens() { const tipo = document.getElementById('tipoItem').value; preencherDropdown('itemId', tipo === 'MATERIAL' ? dependencias.materiais : dependencias.servicos, 'id', 'descricao'); document.getElementById('unidadeMedida').value = tipo === 'MATERIAL' ? 'UN' : 'H'; }
+    function atualizarDropdownItens() { 
+        const tipo = document.getElementById('tipoItem').value;
+        const lista = tipo === 'MATERIAL' ? dependencias.materiais : dependencias.servicos;
+        const dl = document.getElementById('listaItens');
+        dl.innerHTML = ''; // limpa a busca
+        lista.forEach(i => dl.innerHTML += `<option value="${i.descricao}"></option>`);
+        document.getElementById('itemBusca').value = '';
+        document.getElementById('unidadeMedida').value = tipo === 'MATERIAL' ? 'UN' : 'H'; 
+    }
     function configurarEventos() {
         document.getElementById('tipoItem').addEventListener('change', atualizarDropdownItens);
         document.getElementById('btnAdicionarItem').addEventListener('click', adicionarItemTemporario);
@@ -119,11 +135,20 @@
     }
 
     function adicionarItemTemporario(e) {
-        e.preventDefault(); const t = document.getElementById('tipoItem').value, id = document.getElementById('itemId').value, q = document.getElementById('quantidade').value, u = document.getElementById('unidadeMedida').value || 'UN';
-        if (!id || !q || desformatarParaCalculo(q) <= 0) return alert("Erro no item.");
-        const itemSelecionado = (t === 'MATERIAL' ? dependencias.materiais : dependencias.servicos).find(i => i.id == id);
-        itensOrcamento.push({ tipoItem: t, materialId: t === 'MATERIAL' ? parseInt(id) : null, servicoId: t !== 'MATERIAL' ? parseInt(id) : null, unidadeMedida: u.toUpperCase(), quantidade: desformatarParaCalculo(q), valorUnitario: itemSelecionado.valorVenda, descricaoVisual: itemSelecionado.descricao });
-        renderizarTabela(); localStorage.setItem('borges_rascunho_itens', JSON.stringify(itensOrcamento)); document.getElementById('itemId').value = ''; document.getElementById('quantidade').value = '';
+        e.preventDefault(); 
+        const t = document.getElementById('tipoItem').value;
+        const nomeBuscado = document.getElementById('itemBusca').value; // Pega pelo texto
+        const q = document.getElementById('quantidade').value;
+        const u = document.getElementById('unidadeMedida').value || 'UN';
+        
+        const itemSelecionado = (t === 'MATERIAL' ? dependencias.materiais : dependencias.servicos).find(i => i.descricao === nomeBuscado);
+        
+        if (!itemSelecionado || !q || desformatarParaCalculo(q) <= 0) return alert("Item inválido ou não encontrado na busca!");
+        
+        itensOrcamento.push({ tipoItem: t, materialId: t === 'MATERIAL' ? itemSelecionado.id : null, servicoId: t !== 'MATERIAL' ? itemSelecionado.id : null, unidadeMedida: u.toUpperCase(), quantidade: desformatarParaCalculo(q), valorUnitario: itemSelecionado.valorVenda, descricaoVisual: itemSelecionado.descricao });
+        renderizarTabela(); 
+        localStorage.setItem('borges_rascunho_itens', JSON.stringify(itensOrcamento)); 
+        document.getElementById('itemBusca').value = ''; document.getElementById('quantidade').value = '';
     }
 
     window.atualizarValorItem = function(idx, obj) { itensOrcamento[idx].valorUnitario = desformatarParaCalculo(obj.value); renderizarTabela(); localStorage.setItem('borges_rascunho_itens', JSON.stringify(itensOrcamento)); };
@@ -140,9 +165,69 @@
     async function salvarOrcamento(e) {
         e.preventDefault(); if (itensOrcamento.length === 0) return alert("Adicione itens.");
         const btn = document.querySelector('form button[type="submit"]'); btn.disabled = true; btn.innerHTML = "Salvando...";
-        let sub = 0; itensOrcamento.forEach(i => sub += (i.quantidade * i.valorUnitario)); const bdi = desformatarParaCalculo(document.getElementById('bdiPercentual').value), tot = sub + (sub * (bdi / 100));
-        const payload = { cliente: { id: parseInt(document.getElementById('clienteId').value) }, descricaoResumida: document.getElementById('descricaoResumida').value, bdiPercentual: bdi, valorSubtotal: sub, valorTotal: tot, status: "Pendente", itens: itensOrcamento.map(i => ({ tipoItem: i.tipoItem, materialId: i.materialId, servicoId: i.servicoId, unidadeMedida: i.unidadeMedida, quantidade: i.quantidade, valorUnitario: i.valorUnitario, valorTotalItem: (i.quantidade * i.valorUnitario) })) };
-        try { const res = await fetch('https://borges-erp.onrender.com/api/orcamentos', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) }); if (res.ok) { document.querySelector('form').reset(); itensOrcamento = []; renderizarTabela(); localStorage.removeItem('borges_rascunho_itens'); window.location.href = "erp.html"; } } catch (erro) {} finally { btn.disabled = false; btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento`; lucide.createIcons(); }
+        
+        let sub = 0; itensOrcamento.forEach(i => sub += (i.quantidade * i.valorUnitario)); 
+        const bdi = desformatarParaCalculo(document.getElementById('bdiPercentual').value);
+        const desconto = desformatarParaCalculo(document.getElementById('valorDesconto').value);
+        
+        // Novo cálculo: Subtotal + (BDI sobre o subtotal) - Desconto
+        const tot = sub + (sub * (bdi / 100)) - desconto;
+        
+        const payload = { 
+            cliente: { id: parseInt(document.getElementById('clienteId').value) }, 
+            descricaoResumida: document.getElementById('descricaoResumida').value, 
+            bdiPercentual: bdi, 
+            valorDesconto: desconto, // Novo campo indo para o Java
+            valorSubtotal: sub, 
+            valorTotal: tot, 
+            status: "Pendente", 
+            itens: itensOrcamento.map(i => ({ tipoItem: i.tipoItem, materialId: i.materialId, servicoId: i.servicoId, unidadeMedida: i.unidadeMedida, quantidade: i.quantidade, valorUnitario: i.valorUnitario, valorTotalItem: (i.quantidade * i.valorUnitario) })) 
+        };
+        
+        const metodo = orcamentoEditandoId ? 'PUT' : 'POST';
+        const url = orcamentoEditandoId ? `https://borges-erp.onrender.com/api/orcamentos/${orcamentoEditandoId}` : 'https://borges-erp.onrender.com/api/orcamentos';
+
+        try { 
+            const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` }, body: JSON.stringify(payload) }); 
+            if (res.ok) { 
+                document.querySelector('form').reset(); itensOrcamento = []; renderizarTabela(); localStorage.removeItem('borges_rascunho_itens'); window.location.href = "erp.html"; 
+            } 
+        } catch (erro) { alert("Erro de conexão");} finally { btn.disabled = false; btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i> Gravar Orçamento`; lucide.createIcons(); }
+    }
+    let orcamentoEditandoId = null; // Variável para saber se é edição ou novo
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // ... (código existente de verificação de token) ...
+        await carregarDependencias(); 
+        configurarEventos(); 
+        aplicarLogoGlobal();
+
+        // LÓGICA DE EDIÇÃO: Verifica se tem ?id=XX na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('id')) {
+            orcamentoEditandoId = urlParams.get('id');
+            document.querySelector('h1').innerText = "Editar Orçamento";
+            carregarOrcamentoParaEdicao(orcamentoEditandoId);
+        } else {
+            const rascunhoSalvo = localStorage.getItem('borges_rascunho_itens');
+            if (rascunhoSalvo) { itensOrcamento = JSON.parse(rascunhoSalvo); renderizarTabela(); }
+        }
+    });
+
+    async function carregarOrcamentoParaEdicao(id) {
+        try {
+            const res = await fetch(`https://borges-erp.onrender.com/api/orcamentos/${id}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('borges_token')}` } });
+            if (res.ok) {
+                const orc = await res.json();
+                document.getElementById('clienteId').value = orc.cliente ? orc.cliente.id : '';
+                document.getElementById('descricaoResumida').value = orc.descricaoResumida || '';
+                document.getElementById('bdiPercentual').value = (orc.bdiPercentual || 0).toFixed(2).replace('.', ',');
+                document.getElementById('valorDesconto').value = (orc.valorDesconto || 0).toFixed(2).replace('.', ',');
+                
+                itensOrcamento = orc.itens || [];
+                renderizarTabela();
+            }
+        } catch (erro) { alert("Erro ao carregar orçamento."); }
     }
   </script>
 </body>

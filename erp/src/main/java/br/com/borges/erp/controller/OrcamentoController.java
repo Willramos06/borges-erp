@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orcamentos")
-
 public class OrcamentoController {
 
     @Autowired
@@ -29,8 +28,6 @@ public class OrcamentoController {
     @GetMapping
     public ResponseEntity<Page<Orcamento>> listarTodos(
             @PageableDefault(size = 10, sort = {"id"}) Pageable paginacao) {
-        
-        // CORREÇÃO: O nome correto da variável aqui é 'service'
         Page<Orcamento> orcamentos = service.listarTodos(paginacao);
         return ResponseEntity.ok(orcamentos);
     }
@@ -40,10 +37,7 @@ public class OrcamentoController {
         return service.salvar(orcamento);
     }
 
-    @GetMapping("/{id}")
-    public Orcamento buscarPorId(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Orçamento não encontrado"));
-    }
+    // O método buscarPorId antigo foi REMOVIDO daqui. Mantivemos apenas o novo lá embaixo.
 
     @GetMapping("/dashboard")
     public Map<String, BigDecimal> obterResumoDashboard(@RequestParam(required = false) Integer dias) {
@@ -82,5 +76,32 @@ public class OrcamentoController {
     @PatchMapping("/{id}/status")
     public Orcamento atualizarStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         return service.atualizarStatus(id, body.get("status"));
+    }
+
+    // 1. Busca um orçamento específico pelo ID (MÉTODO ÚNICO E CORRETO AGORA)
+    @GetMapping("/{id}")
+    public ResponseEntity<Orcamento> buscarPorId(@PathVariable Long id) {
+        return repository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    // 2. Atualiza o orçamento existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Orcamento> atualizar(@PathVariable Long id, @RequestBody Orcamento dadosAtualizados) {
+        return repository.findById(id).map(orc -> {
+            orc.setCliente(dadosAtualizados.getCliente());
+            orc.setDescricaoResumida(dadosAtualizados.getDescricaoResumida());
+            orc.setBdiPercentual(dadosAtualizados.getBdiPercentual());
+            orc.setValorDesconto(dadosAtualizados.getValorDesconto()); 
+            orc.setValorSubtotal(dadosAtualizados.getValorSubtotal());
+            orc.setValorTotal(dadosAtualizados.getValorTotal());
+            orc.setStatus(dadosAtualizados.getStatus());
+            
+            orc.getItens().clear();
+            if (dadosAtualizados.getItens() != null) {
+                orc.getItens().addAll(dadosAtualizados.getItens());
+            }
+            
+            return ResponseEntity.ok(repository.save(orc));
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

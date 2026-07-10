@@ -464,6 +464,7 @@
                         <option value="Pendente" ${s.includes('pendente') ? 'selected' : ''} class="text-concreto">Pendente</option>
                         <option value="Em Andamento" ${s.includes('andamento') ? 'selected' : ''} class="text-concreto">Em Andamento</option>
                         <option value="Concluído" ${s.includes('concluí') ? 'selected' : ''} class="text-concreto">Concluído</option>
+                        <option value="Recusado" ${s.includes('recusad') ? 'selected' : ''} class="text-red-600">Recusado</option>
                     </select>
                   </span>
                 </td>
@@ -646,7 +647,7 @@
                             </div>
                             <div style="width: 40%; text-align: right; line-height: 1.6;">
                                 Subtotal R$: <strong>${(orc.valorSubtotal || orc.valorTotal).toFixed(2).replace('.', ',')}</strong><br>
-                                Desconto R$: 0,00<br>
+                                Desconto R$: ${(orc.valorDesconto || 0).toFixed(2).replace('.', ',')}<br>
                                 Acréscimo (BDI) R$: ${((orc.valorTotal || 0) - (orc.valorSubtotal || 0)).toFixed(2).replace('.', ',')}<br>
                                 <span style="font-size: 14px;"><strong>Total geral R$: ${(orc.valorTotal || 0).toFixed(2).replace('.', ',')}</strong></span>
                             </div>

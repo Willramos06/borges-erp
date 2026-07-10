@@ -74,6 +74,9 @@ public class Orcamento {
         this.dataAtualizacao = LocalDateTime.now();
     }
 
+    @Column(name = "valor_desconto", precision = 12, scale = 2)
+    private BigDecimal valorDesconto = BigDecimal.ZERO;
+
     // --- GETTERS E SETTERS ---
 
     public Long getId() { return id; }
@@ -114,4 +117,9 @@ public class Orcamento {
 
     public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
+
+    // Não se esqueça de gerar o Getter e o Setter dele no final do arquivo:
+    public BigDecimal getValorDesconto() { return valorDesconto; }
+    public void setValorDesconto(BigDecimal valorDesconto) { this.valorDesconto = valorDesconto; }
+
 }
