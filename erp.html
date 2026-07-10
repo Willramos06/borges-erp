@@ -450,8 +450,11 @@
             const tr = document.createElement('tr');
             tr.className = "hover:bg-gesso/50 transition";
             const s = (orc.status || "Pendente").toLowerCase();
+            
+            // Lógica de cores do status (incluindo o Recusado em vermelho)
             let classeStatusBg = s.includes('concluí') ? "bg-status-concluido/10 text-status-concluido" : 
                                  s.includes('andamento') ? "bg-status-andamento/10 text-status-andamento" : 
+                                 s.includes('recusad') ? "bg-red-100 text-red-600" :
                                  "bg-concreto/10 text-concreto";
 
             tr.innerHTML = `
@@ -469,6 +472,9 @@
                   </span>
                 </td>
                 <td class="p-4 text-right space-x-2">
+                  <button onclick="window.location.href='novo-orcamento.html?id=${orc.id}'" class="p-2 text-concreto/50 hover:text-blue-500 bg-white border border-concreto/10 rounded-lg shadow-sm" title="Editar Orçamento">
+                    <i data-lucide="edit" class="w-4 h-4"></i>
+                  </button>
                   <button onclick="gerarPDF(${orc.id})" class="p-2 text-concreto/50 hover:text-vermelho bg-white border border-concreto/10 rounded-lg shadow-sm" title="Baixar Orçamento">
                     <i data-lucide="file-down" class="w-4 h-4"></i>
                   </button>
