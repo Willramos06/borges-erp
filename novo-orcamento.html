@@ -248,17 +248,38 @@
                 document.getElementById('bdiPercentual').value = (orc.bdiPercentual || 0).toFixed(2).replace('.', ',');
                 document.getElementById('valorDesconto').value = (orc.valorDesconto || 0).toFixed(2).replace('.', ',');
                 
-                // CORREÇÃO: "Traduz" o formato do Java para o formato que a tela espera
-                itensOrcamento = (orc.itens || []).map(item => ({
-                    ...item,
-                    descricaoVisual: item.servico ? item.servico.descricao : (item.material ? item.material.descricao : 'Item sem nome'),
-                    servicoId: item.servico ? item.servico.id : item.servicoId,
-                    materialId: item.material ? item.material.id : item.materialId
-                }));
+                // CORREÇÃO: Busca a descrição cruzando os IDs com os catálogos já carregados na memória
+                itensOrcamento = (orc.itens || []).map(item => {
+                    let nomeExato = 'Item sem nome';
+
+                    // 1. Tenta pegar se o Java enviou o objeto completo
+                    if (item.servico && item.servico.descricao) {
+                        nomeExato = item.servico.descricao;
+                    } else if (item.material && item.material.descricao) {
+                        nomeExato = item.material.descricao;
+                    } 
+                    // 2. Se o Java enviou só o ID, busca nos catálogos
+                    else if (item.tipoItem === 'MATERIAL' && item.materialId) {
+                        const mat = dependencias.materiais.find(m => m.id === item.materialId);
+                        if (mat) nomeExato = mat.descricao;
+                    } else if ((item.tipoItem === 'SERVICO' || item.tipoItem === 'SERVICO_MATERIAL') && item.servicoId) {
+                        const serv = dependencias.servicos.find(s => s.id === item.servicoId);
+                        if (serv) nomeExato = serv.descricao;
+                    }
+
+                    return {
+                        ...item,
+                        descricaoVisual: nomeExato,
+                        servicoId: item.servico ? item.servico.id : item.servicoId,
+                        materialId: item.material ? item.material.id : item.materialId
+                    };
+                });
                 
                 renderizarTabela();
             }
-        } catch (erro) { alert("Erro ao carregar orçamento."); }
+        } catch (erro) { 
+            alert("Erro ao carregar orçamento."); 
+        }
     }
   </script>
 </body>
