@@ -184,9 +184,8 @@
             valorSubtotal: sub, 
             valorTotal: tot, 
             status: "Pendente", 
-            // CORREÇÃO: Extração rigorosa dos IDs e envio do ID do próprio item para o JPA atualizar
+            // CORREÇÃO: Removemos o 'id: i.id' daqui para o Java recriar as linhas sem conflito
             itens: itensOrcamento.map(i => ({ 
-                id: i.id || null, 
                 tipoItem: i.tipoItem, 
                 materialId: i.materialId || (i.material ? i.material.id : null), 
                 servicoId: i.servicoId || (i.servico ? i.servico.id : null), 
