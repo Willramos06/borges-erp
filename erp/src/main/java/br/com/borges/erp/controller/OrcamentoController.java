@@ -85,6 +85,7 @@ public class OrcamentoController {
     }
 
     // 2. Atualiza o orçamento existente
+    // 2. Atualiza o orçamento existente
     @PutMapping("/{id}")
     public ResponseEntity<Orcamento> atualizar(@PathVariable Long id, @RequestBody Orcamento dadosAtualizados) {
         return repository.findById(id).map(orc -> {
@@ -96,8 +97,11 @@ public class OrcamentoController {
             orc.setValorTotal(dadosAtualizados.getValorTotal());
             orc.setStatus(dadosAtualizados.getStatus());
             
+            // Limpa os itens antigos e insere os novos
             orc.getItens().clear();
             if (dadosAtualizados.getItens() != null) {
+                // A CORREÇÃO ESTÁ AQUI: Avisamos a cada item que ele pertence a este orçamento!
+                dadosAtualizados.getItens().forEach(item -> item.setOrcamento(orc));
                 orc.getItens().addAll(dadosAtualizados.getItens());
             }
             
