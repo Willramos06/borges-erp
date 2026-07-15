@@ -65,10 +65,16 @@
   </main>
   <script>
     lucide.createIcons();
-    let itensOrcamento = []; let dependencias = { clientes: [], materiais: [], servicos: [] };
+    let itensOrcamento = []; 
+    let dependencias = { clientes: [], materiais: [], servicos: [] };
+    
+    // ADICIONE ESTA LINHA AQUI (Ela avisa ao sistema que a variável existe)
+    let orcamentoEditandoId = null; 
 
     document.addEventListener('DOMContentLoaded', async () => {
         if (!localStorage.getItem('borges_token')) return window.location.href = 'login.html';
+        
+        // ... restante do seu código continua normal ...
         const rascunhoSalvo = localStorage.getItem('borges_rascunho_itens');
         if (rascunhoSalvo) { itensOrcamento = JSON.parse(rascunhoSalvo); renderizarTabela(); }
         await carregarDependencias(); configurarEventos(); aplicarLogoGlobal();
